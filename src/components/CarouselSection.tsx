@@ -119,7 +119,21 @@ const CarouselSection = () => {
       image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800&h=400&fit=crop",
       content: (
         <div className="space-y-4">
-          <h4 className="font-semibold text-lg text-primary">Recent News</h4>
+          <div className="flex items-center justify-between mb-2">
+            <h4 className="font-semibold text-lg text-primary">Recent News</h4>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => window.open('https://www.whz.de/hochschule/informationen/pressemitteilungen/?no_cache=1', '_blank')}
+              className="text-xs"
+            >
+              View All News →
+            </Button>
+          </div>
+          <p className="text-sm text-muted-foreground mb-4">
+            Stay up to date with the latest announcements, research achievements, events, and important updates from WHZ. 
+            Get insights into campus developments, student activities, and academic excellence.
+          </p>
           {loadingNews ? (
             <div className="text-center text-muted-foreground py-8">Loading news...</div>
           ) : (
