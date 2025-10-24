@@ -1,14 +1,19 @@
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import AdminNavbar from "@/components/AdminNavbar";
 import TimetableCard from "@/components/TimetableCard";
+import RegisteredEventsCard from "@/components/RegisteredEventsCard";
+import NewsletterCard from "@/components/NewsletterCard";
+import KnowledgeCentreCard from "@/components/KnowledgeCentreCard";
 import CarouselSection from "@/components/CarouselSection";
+import TrendingEvents from "@/components/TrendingEvents";
 import GreetingSection from "@/components/GreetingSection";
 import CalendarWidget from "@/components/CalendarWidget";
 import MySpaceForm from "@/components/MySpaceForm";
 import WordOfTheDay from "@/components/WordOfTheDay";
 import TimeTracker from "@/components/TimeTracker";
+import WalletCard from "@/components/WalletCard";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
 
 const AdminHome = () => {
   const navigate = useNavigate();
@@ -16,7 +21,8 @@ const AdminHome = () => {
   return (
     <div className="min-h-screen admin-theme">
       <AdminNavbar />
-      <div className="container mx-auto px-6 pt-24 pb-12">
+      
+      <main className="container mx-auto px-6 pt-24 pb-12">
         <Button
           variant="ghost"
           size="sm"
@@ -27,31 +33,36 @@ const AdminHome = () => {
           Back to Users
         </Button>
 
-        <h1 className="text-5xl font-bold gradient-text mb-12 text-center">
-          Zwickly ADMIN
-        </h1>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Column */}
-          <div className="space-y-6">
-            <TimetableCard />
-            <CarouselSection />
+        <h2 className="text-3xl font-bold text-center gradient-text mb-8">
+          Zwickly HOME
+        </h2>
+        
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          {/* LEFT PANE */}
+          <div className="lg:col-span-3 space-y-6">
+          <TimetableCard />
+          <RegisteredEventsCard />
+          <NewsletterCard />
+          <KnowledgeCentreCard />
           </div>
 
-          {/* Middle Column */}
-          <div className="space-y-6">
+          {/* MIDDLE PANE */}
+          <div className="lg:col-span-6 space-y-6">
+            <CarouselSection />
+            <TrendingEvents />
+          </div>
+
+          {/* RIGHT PANE */}
+          <div className="lg:col-span-3 space-y-6">
             <GreetingSection />
+            <WalletCard />
             <CalendarWidget />
             <MySpaceForm />
-          </div>
-
-          {/* Right Column */}
-          <div className="space-y-6">
             <WordOfTheDay />
             <TimeTracker />
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 };
