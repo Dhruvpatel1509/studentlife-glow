@@ -5,11 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { fetchMensaSchedule, MensaMeal } from "@/lib/mensaApi";
+import { fetchCampusNews, NewsItem } from "@/lib/newsApi";
 
 const CarouselSection = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [mensaMeals, setMensaMeals] = useState<MensaMeal[]>([]);
   const [loadingMensa, setLoadingMensa] = useState(true);
+  const [campusNews, setCampusNews] = useState<NewsItem[]>([]);
+  const [loadingNews, setLoadingNews] = useState(true);
 
   useEffect(() => {
     const loadMensaData = async () => {
@@ -20,6 +23,17 @@ const CarouselSection = () => {
     };
     
     loadMensaData();
+  }, []);
+
+  useEffect(() => {
+    const loadNewsData = async () => {
+      setLoadingNews(true);
+      const news = await fetchCampusNews();
+      setCampusNews(news);
+      setLoadingNews(false);
+    };
+    
+    loadNewsData();
   }, []);
 
   const slides = [
@@ -105,19 +119,32 @@ const CarouselSection = () => {
       image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800&h=400&fit=crop",
       content: (
         <div className="space-y-4">
-          <h4 className="font-semibold text-lg text-primary">Recent Announcements</h4>
-          <div className="grid gap-3">
-            {[
-              { title: "New Library Hours", summary: "Extended hours during exam period - now open until 11 PM." },
-              { title: "Research Grants Available", summary: "Apply for student research funding. Deadline: March 31." },
-              { title: "Cafeteria Renovation", summary: "New seating area opening next week with modern facilities." },
-            ].map((news, i) => (
-              <div key={i} className="p-3 rounded-lg bg-muted/20 border border-primary/10">
-                <p className="font-semibold text-foreground mb-1">{news.title}</p>
-                <p className="text-sm text-muted-foreground">{news.summary}</p>
-              </div>
-            ))}
-          </div>
+          <h4 className="font-semibold text-lg text-primary">Recent News</h4>
+          {loadingNews ? (
+            <div className="text-center text-muted-foreground py-8">Loading news...</div>
+          ) : campusNews.length === 0 ? (
+            <div className="text-center text-muted-foreground py-8">No news available</div>
+          ) : (
+            <div className="grid gap-4">
+              {campusNews.map((news) => (
+                <div key={news.id} className="p-4 rounded-lg bg-muted/20 border border-primary/10">
+                  <div className="flex gap-4">
+                    {news.imageUrl && (
+                      <img 
+                        src={news.imageUrl} 
+                        alt={news.title}
+                        className="w-32 h-32 object-cover rounded-lg"
+                      />
+                    )}
+                    <div className="flex-1">
+                      <p className="font-semibold text-foreground mb-2">{news.title}</p>
+                      <p className="text-sm text-muted-foreground">{news.summary}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )
     }
