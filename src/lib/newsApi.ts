@@ -41,53 +41,78 @@ const parseNewsHTML = (html: string): NewsItem[] => {
   const parser = new DOMParser();
   const doc = parser.parseFromString(html, "text/html");
   const news: NewsItem[] = [];
-  
-  // Find all image links - each news item starts with an image
-  const images = doc.querySelectorAll('a img[src*="newsbilder"]');
-  
-  images.forEach((img) => {
-    const imageUrl = img.getAttribute('src') || '';
-    const imageId = imageUrl.match(/newsbilder\/(\d+)_/)?.[1] || '';
-    
-    // Get the next sibling elements for title and summary
-    let currentElement = img.closest('a')?.nextElementSibling;
-    let title = '';
+
+  // Primary strategy: iterate headings and pick nearby image and summary
+  const headings = Array.from(doc.querySelectorAll('h1, h2, h3')) as HTMLElement[];
+
+  for (const h of headings) {
+    const title = (h.textContent || '').trim();
+    if (!title) continue;
+
+    // Find summary: next non-empty paragraph that isn't "weiterlesen"
     let summary = '';
-    
-    // Find the h3 (title)
-    while (currentElement && !title) {
-      if (currentElement.tagName === 'H3') {
-        title = currentElement.textContent?.trim() || '';
-        break;
-      }
-      currentElement = currentElement.nextElementSibling;
-    }
-    
-    // Find the paragraph (summary) after the h3
-    if (currentElement) {
-      currentElement = currentElement.nextElementSibling;
-      while (currentElement && !summary) {
-        if (currentElement.tagName === 'P') {
-          const text = currentElement.textContent?.trim() || '';
-          if (text && text !== 'weiterlesen') {
-            summary = text;
-            break;
-          }
+    let el: Element | null = h.nextElementSibling;
+    while (el) {
+      if (el.tagName === 'P') {
+        const text = (el.textContent || '').trim();
+        if (text && text.toLowerCase() !== 'weiterlesen') {
+          summary = text;
+          break;
         }
-        currentElement = currentElement.nextElementSibling;
       }
+      el = el.nextElementSibling;
     }
-    
-    if (imageId && title && summary) {
+
+    // Find an image close to the heading (previous or next siblings)
+    let imgUrl = '';
+    // look backwards up to 3 siblings
+    let prev: Element | null = h.previousElementSibling;
+    let steps = 0;
+    while (prev && steps < 3 && !imgUrl) {
+      const img = prev.querySelector('img[src*="newsbilder"]') as HTMLImageElement | null;
+      if (img?.src) imgUrl = img.src;
+      prev = prev.previousElementSibling;
+      steps++;
+    }
+    // look forwards if not found
+    let next: Element | null = h.nextElementSibling;
+    steps = 0;
+    while (next && steps < 3 && !imgUrl) {
+      const img = next.querySelector('img[src*="newsbilder"]') as HTMLImageElement | null;
+      if (img?.src) imgUrl = img.src;
+      next = next.nextElementSibling;
+      steps++;
+    }
+
+    if (title && summary) {
+      const id = imgUrl.match(/newsbilder\/(\d+)_/)?.[1] || title.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 24);
       news.push({
-        id: imageId,
+        id,
         title,
         summary,
-        imageUrl: imageUrl.startsWith('http') ? imageUrl : `https://mobile.whz.de${imageUrl}`
+        imageUrl: imgUrl || 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800&h=400&fit=crop'
       });
     }
-  });
-  
-  // Return only first 2 news items
+
+    if (news.length >= 2) break;
+  }
+
+  // Fallback regex strategy if nothing was found
+  if (news.length === 0) {
+    const titleMatches = Array.from(html.matchAll(/<h3[^>]*>(.*?)<\/h3>/gi)).slice(0, 2);
+    const imgMatches = Array.from(html.matchAll(/newsbilder\/(\d+)[^"']+\.(?:jpg|png)/gi));
+
+    for (let i = 0; i < titleMatches.length; i++) {
+      const rawTitle = titleMatches[i][1].replace(/<[^>]+>/g, '').trim();
+      const imgRel = imgMatches[i]?.[0] || '';
+      news.push({
+        id: (imgRel.match(/(\d+)/)?.[1]) || `${i}`,
+        title: rawTitle,
+        summary: 'Read more on WHZ News portal',
+        imageUrl: imgRel ? `https://mobile.whz.de/news/${imgRel.startsWith('newsbilder') ? '' : ''}${imgRel}` : 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800&h=400&fit=crop'
+      });
+    }
+  }
+
   return news.slice(0, 2);
 };

@@ -122,11 +122,16 @@ const CarouselSection = () => {
           <h4 className="font-semibold text-lg text-primary">Recent News</h4>
           {loadingNews ? (
             <div className="text-center text-muted-foreground py-8">Loading news...</div>
-          ) : campusNews.length === 0 ? (
-            <div className="text-center text-muted-foreground py-8">No news available</div>
           ) : (
             <div className="grid gap-4">
-              {campusNews.map((news) => (
+              {(campusNews.length ? campusNews : [
+                {
+                  id: "fallback-1",
+                  title: "Visit the WHZ News Portal",
+                  summary: "Latest campus updates, events and research highlights.",
+                  imageUrl: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800&h=400&fit=crop"
+                }
+              ]).map((news) => (
                 <div key={news.id} className="p-4 rounded-lg bg-muted/20 border border-primary/10">
                   <div className="flex gap-4">
                     {news.imageUrl && (
