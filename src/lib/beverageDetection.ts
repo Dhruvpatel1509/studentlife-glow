@@ -34,9 +34,9 @@ export const detectBeverage = async (imageFile: File): Promise<{ detected: boole
     // Convert file to image URL
     const imageUrl = URL.createObjectURL(imageFile);
     
-    // Run detection
+    // Run detection with higher threshold to reduce false positives
     const results = await detector(imageUrl, {
-      threshold: 0.3,
+      threshold: 0.5,
       percentage: true,
     });
     
