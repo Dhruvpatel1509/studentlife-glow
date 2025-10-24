@@ -102,7 +102,7 @@ serve(async (req) => {
       }
     ];
 
-    // Call Groq API - start without tools to ensure basic functionality
+    // Call Groq API with simplified tool calling
     let response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -114,19 +114,16 @@ serve(async (req) => {
         messages: [
           {
             role: 'system',
-            content: `You are Pixie, a helpful and friendly AI assistant for WHZ (Westsächsische Hochschule Zwickau) students. 
+            content: `You are Pixie, a helpful AI assistant for WHZ students. You have access to real-time database information.
 
-You can help with:
-- Events and workshops information
-- Timetable and class schedules
-- Exam dates
-- Mensa (cafeteria) menu
-- Campus news
-- Transportation
+When users ask about:
+- Events: Tell them about upcoming events, workshops, and seminars
+- Timetable: Show their class schedule
+- Exams: Display exam dates and times
+- Mensa menu: Show today's cafeteria menu
+- News: Share latest campus news
 
-Be concise, friendly, and helpful. Use emojis occasionally to be engaging.
-
-When users ask about specific data like events, timetable, exams, or mensa menu, let them know that information is available in the system and provide general guidance. For the most up-to-date information, users can check the main dashboard.`
+Always be friendly, concise, and use emojis. Provide specific information when available.`
           },
           ...messages
         ],
@@ -158,9 +155,107 @@ When users ask about specific data like events, timetable, exams, or mensa menu,
       });
     }
 
-    // Return the response directly (tools removed for stability)
+    // Check if we need to fetch database info based on user query
+    const userMessage = messages[messages.length - 1]?.content?.toLowerCase() || '';
+    let enrichedResponse = data.choices[0].message.content;
+    
+    // Detect what data user is asking for and fetch it
+    try {
+      if (userMessage.includes('event')) {
+        const { data: events } = await supabase
+          .from('events')
+          .select('title, event_date, event_time, location, category')
+          .gte('event_date', new Date().toISOString().split('T')[0])
+          .order('event_date', { ascending: true })
+          .limit(5);
+        
+        if (events && events.length > 0) {
+          enrichedResponse += '\n\n📅 **Upcoming Events:**\n';
+          events.forEach(e => {
+            enrichedResponse += `• ${e.title} - ${e.event_date} at ${e.event_time} (${e.location})\n`;
+          });
+        }
+      }
+      
+      if (userMessage.includes('timetable') || userMessage.includes('schedule') || userMessage.includes('class')) {
+        const days = ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag'];
+        const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });
+        const dayMap: { [key: string]: string } = {
+          'Monday': 'Montag',
+          'Tuesday': 'Dienstag', 
+          'Wednesday': 'Mittwoch',
+          'Thursday': 'Donnerstag',
+          'Friday': 'Freitag'
+        };
+        const germanDay = dayMap[today] || 'Montag';
+        
+        const { data: timetable } = await supabase
+          .from('timetable')
+          .select('day_time, course, room, instructor')
+          .eq('day_name', germanDay)
+          .eq('sem_group', '252035')
+          .order('day_time', { ascending: true });
+        
+        if (timetable && timetable.length > 0) {
+          enrichedResponse += `\n\n📚 **Today's Schedule (${germanDay}):**\n`;
+          timetable.forEach(t => {
+            enrichedResponse += `• ${t.day_time}: ${t.course} in ${t.room}\n`;
+          });
+        }
+      }
+      
+      if (userMessage.includes('exam')) {
+        const { data: exams } = await supabase
+          .from('exams')
+          .select('course, date, period, space')
+          .eq('sem_group', '252035')
+          .order('date', { ascending: true })
+          .limit(5);
+        
+        if (exams && exams.length > 0) {
+          enrichedResponse += '\n\n📝 **Upcoming Exams:**\n';
+          exams.forEach(e => {
+            enrichedResponse += `• ${e.course}\n  Date: ${e.date}, ${e.period}\n  Location: ${e.space}\n`;
+          });
+        }
+      }
+      
+      if (userMessage.includes('mensa') || userMessage.includes('food') || userMessage.includes('menu')) {
+        const { data: menu } = await supabase
+          .from('mensa_menu')
+          .select('meal_station, dish_description, price_s, price_m, price_g')
+          .limit(5);
+        
+        if (menu && menu.length > 0) {
+          enrichedResponse += '\n\n🍽️ **Today\'s Mensa Menu:**\n';
+          menu.forEach(m => {
+            enrichedResponse += `• ${m.meal_station}: ${m.dish_description}\n  Prices: Small ${m.price_s}, Medium ${m.price_m}, Large ${m.price_g}\n`;
+          });
+        }
+      }
+      
+      if (userMessage.includes('news')) {
+        const { data: news } = await supabase
+          .from('whz_news')
+          .select('title, description')
+          .order('created_at', { ascending: false })
+          .limit(3);
+        
+        if (news && news.length > 0) {
+          enrichedResponse += '\n\n📰 **Latest Campus News:**\n';
+          news.forEach(n => {
+            enrichedResponse += `• ${n.title}\n  ${n.description}\n`;
+          });
+        }
+      }
+    } catch (dbError) {
+      console.error('Database fetch error:', dbError);
+      // Continue with original response if database fetch fails
+    }
+
+    // Return the response with database data
     return new Response(JSON.stringify({ 
-      message: data.choices[0].message.content 
+      message: enrichedResponse
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
