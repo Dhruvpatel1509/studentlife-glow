@@ -1,8 +1,9 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Bot, Send, User, Sparkles } from "lucide-react";
+import { Bot, Send, User, Sparkles, ArrowLeft } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface Message {
@@ -13,6 +14,7 @@ interface Message {
 }
 
 const Chatbot = () => {
+  const navigate = useNavigate();
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,
@@ -50,6 +52,15 @@ const Chatbot = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-background via-background/95 to-primary/5">
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => navigate("/users")}
+        className="absolute top-6 left-6 hover:bg-primary/20"
+      >
+        <ArrowLeft className="w-4 h-4 mr-2" />
+        Back to Users
+      </Button>
       <Card className="w-full max-w-4xl h-[80vh] glass-card border-primary/30 flex flex-col">
         {/* Header */}
         <div className="p-6 border-b border-primary/20">
