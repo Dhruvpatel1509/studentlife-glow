@@ -30,14 +30,31 @@ const AdminHome = () => {
 
   const fetchPendingProposals = async () => {
     try {
-      const { data, error } = await supabase
+      // Fetch pending proposals
+      const { data: proposals, error: proposalsError } = await supabase
         .from("event_proposals")
-        .select("*, profiles(email)")
+        .select("*")
         .eq("status", "pending")
         .order("created_at", { ascending: false });
 
-      if (error) throw error;
-      setPendingProposals(data || []);
+      if (proposalsError) throw proposalsError;
+
+      // Fetch user profiles for the proposals
+      const userIds = proposals?.map(p => p.user_id) || [];
+      const { data: profiles, error: profilesError } = await supabase
+        .from("profiles")
+        .select("id, email")
+        .in("id", userIds);
+
+      if (profilesError) throw profilesError;
+
+      // Map proposals with user emails
+      const proposalsWithEmails = proposals?.map(proposal => ({
+        ...proposal,
+        user_email: profiles?.find(p => p.id === proposal.user_id)?.email || 'Unknown User'
+      })) || [];
+
+      setPendingProposals(proposalsWithEmails);
     } catch (error) {
       console.error("Error fetching pending proposals:", error);
     }
@@ -520,7 +537,7 @@ const AdminHome = () => {
                       <div className="flex-1">
                         <CardTitle className="text-xl mb-2">{proposal.title}</CardTitle>
                         <CardDescription className="text-sm">
-                          Submitted by: {proposal.profiles?.email || 'Unknown User'}
+                          Submitted by: {proposal.user_email}
                         </CardDescription>
                         <CardDescription className="text-xs mt-1">
                           {new Date(proposal.created_at).toLocaleDateString('en-US', {
