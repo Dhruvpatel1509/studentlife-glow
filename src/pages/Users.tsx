@@ -1,8 +1,10 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
-import { GraduationCap, Bot, Shield } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import zwicklyLogo from "@/assets/zwickly-logo.png";
+import pixieLogo from "@/assets/pixie-logo.png";
+import kommpaktLogo from "@/assets/kommpakt-logo.png";
 
 const Users = () => {
   const navigate = useNavigate();
@@ -16,7 +18,7 @@ const Users = () => {
       id: "student",
       title: "Zwickly Student",
       description: "Access your campus dashboard",
-      icon: GraduationCap,
+      logo: zwicklyLogo,
       action: () => navigate("/student-auth"),
       gradient: "from-blue-600 to-purple-600"
     },
@@ -24,7 +26,7 @@ const Users = () => {
       id: "chatbot",
       title: "Pixie",
       description: "Chat with our AI assistant",
-      icon: Bot,
+      logo: pixieLogo,
       action: () => navigate("/chatbot"),
       gradient: "from-pink-600 to-purple-600"
     },
@@ -32,7 +34,7 @@ const Users = () => {
       id: "admin",
       title: "KommPakt",
       description: "Admin portal access",
-      icon: Shield,
+      logo: kommpaktLogo,
       action: () => navigate("/admin-auth"),
       gradient: "from-orange-600 to-red-600"
     }
@@ -48,7 +50,6 @@ const Users = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {userTypes.map((type, index) => {
-            const Icon = type.icon;
             return (
               <Card
                 key={type.id}
@@ -59,8 +60,8 @@ const Users = () => {
                 <div className={`absolute inset-0 bg-gradient-to-br ${type.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-300`} />
                 
                 <div className="relative z-10 flex flex-col items-center text-center space-y-4">
-                  <div className={`p-6 rounded-full bg-gradient-to-br ${type.gradient} shadow-lg group-hover:scale-110 transition-transform duration-300`}>
-                    <Icon className="w-12 h-12 text-white" />
+                  <div className="w-32 h-32 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                    <img src={type.logo} alt={type.title} className="w-full h-full object-contain" />
                   </div>
                   
                   <h2 className="text-2xl font-bold gradient-text">{type.title}</h2>
