@@ -1,0 +1,80 @@
+-- Insert the 6 events with all details
+INSERT INTO public.events (title, location, event_date, event_time, image_url, category, description, language, registration_info, likes, prosts) VALUES
+(
+  'Exkursion: CONTINENTAL AEROSPACE TECHNOLOGIES GmbH',
+  'Platanenstr. 14, 09356 St. Egidien',
+  '2025-10-27',
+  '11:00 – 12:30',
+  'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&q=80',
+  'Excursion',
+  'Die Continental Aerospace Technologies GmbH ist ein mittelständischer Systempartner der Luftfahrt. Das Unternehmen konzipiert, entwickelt und produziert mechanische sowie elektronische Komponenten für Hochleistungsmotoren. Bekannt ist es insbesondere für Dieselkolbenflugmotoren, die in Kleinflugzeugen der Allgemeinen Luftfahrt eingesetzt werden.',
+  'Deutsch',
+  'Mit Ihrer Anmeldung stimmen Sie zu, dass Ihr Vor- und Nachname sowie Geburtsdatum an das Unternehmen weitergegeben wird. Bitte übermitteln Sie nach Ihrer Anmeldung bis spätestens den 20.10.2025 Ihr Geburtsdatum an anais.kelly@whz.de. Treffpunkt am Zwickauer Hauptbahnhof. Anmeldung über OPAL. Kurzfristige Abmeldung über OPAL bis zum 20.10 verpflichtend.',
+  0,
+  0
+),
+(
+  'Career and Growth Club',
+  'Raum KEP101',
+  '2025-10-27',
+  '17:00 – 18:30',
+  'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&q=80',
+  'Networking',
+  'Coming to WHZ is the start of a new chapter — but it can also feel confusing and overwhelming. The Career & Growth Club is here to make sure you don''t lose track of your goals. It''s a student-led space where seniors share real experiences, juniors find guidance, and everyone supports each other in building a stronger academic and career path. What we do: peer-to-peer mentoring, monthly meetups, practical tips, guest inputs and ongoing support.',
+  'English',
+  'Register on OPAL to participate in this student networking event.',
+  0,
+  0
+),
+(
+  'CV Secrets – Go Beyond the Basics',
+  'City Center GAB247',
+  '2025-10-28',
+  '17:00 – 18:00',
+  'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800&q=80',
+  'Workshop',
+  'Still using the Europass format? Then you''re missing out on the chance to make your CV truly personal. In this workshop, you will learn how to move beyond generic templates — with clarity, authenticity, and strategy. You''ll also get a behind-the-scenes look at how HR professionals use AI tools to screen applications, and what that means for your CV. Learn how to stand out in a digital-first selection process.',
+  'English',
+  'Open workshop. Speaker: Gina Flachsbart, Career Service WHZ.',
+  0,
+  0
+),
+(
+  'Career Service Office Hours',
+  'Campus Scheffelstraße, S_6102',
+  '2025-10-29',
+  '13:00 – 16:00',
+  'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=800&q=80',
+  'Counseling',
+  'Der Career Service hilft euch bei Fragen zu Bewerbungsunterlagen, Praktika und Werkstudententätigkeiten. Außerdem unterstützen wir dich beim Besuch von Job- und Fachmessen, bei der Wahl von Studienschwerpunkten und der Suche nach Stipendien. Auch bei Fragen zu Arbeitszeugnissen, Weiterbildung und Perspektivenwechsel nach dem Studium stehen wir dir zur Seite.',
+  'Deutsch & English',
+  'Drop-in office hours. No registration required. Referentin: Frau Melanie Braun, WHZ.',
+  0,
+  0
+),
+(
+  'KarriereSCHUBkarre',
+  'Aula Scheffelstraße',
+  '2025-10-29',
+  'ab 14:00',
+  'https://images.unsplash.com/photo-1511578314322-379afb476865?w=800&q=80',
+  'Career Fair',
+  'Die Veranstaltung KarriereSCHUBkarre bringt Studierende, Hochschulen und Unternehmen an einen Tisch, um Zukunftsthemen gemeinsam zu bewegen. Ziel der Veranstaltung ist es, Wege zu entwickeln, wie studentische Wünsche stärker berücksichtigt und praxisnahe Chancen für Praktika, Abschlussarbeiten und Berufseinstiege geschaffen werden können. The open exchange creates space for new ideas, mutual understanding and sustainable networks.',
+  'Deutsch & English',
+  'Zielgruppe: Studierende der Fakultät Kraftfahrzeugtechnik. Messeveranstaltung mit Unternehmen und Industriepartnern.',
+  0,
+  0
+),
+(
+  'JungIngenieureNetzwerk – Wegziehen oder bleiben?',
+  'Volkswagen Bildungsinstitut, Reichenbacher Str. 76, 08056 Zwickau',
+  '2025-10-29',
+  '17:00 – 20:00',
+  'https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&q=80',
+  'Networking',
+  'Im JIN-Netzwerktreffen wollen wir mit Euch über die Frage „Wegziehen oder bleiben?" diskutieren. Unsere Automobilregion wird sich verändern. Die Richtung ist ungewiss. Optionen liegen auf dem Tisch. Ideen sind gefragt. Wandelfähigkeit wird über den Wohlstand bestimmen. Agenda: ITAS Präsentation, Masterplan Südwestsachsen, Blick in die Zukunft, Führung VW BI, Netzwerkzeit und Imbiss.',
+  'Deutsch',
+  'Shuttle-Transfer vom Campus Scheffelberg nach der KarriereSCHUBkarre. Networking event für JungIngenieure.',
+  0,
+  0
+);
