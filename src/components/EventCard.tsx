@@ -10,9 +10,10 @@ interface EventCardProps {
   location: string;
   time: string;
   image: string;
+  category?: string;
 }
 
-const EventCard = ({ title, location, time, image }: EventCardProps) => {
+const EventCard = ({ title, location, time, image, category }: EventCardProps) => {
   const [likes, setLikes] = useState(Math.floor(Math.random() * 50) + 10);
   const [prosts, setProsts] = useState(Math.floor(Math.random() * 30) + 5);
   const [isLiked, setIsLiked] = useState(false);
@@ -67,7 +68,14 @@ const EventCard = ({ title, location, time, image }: EventCardProps) => {
         </div>
         
         <div className="p-5">
-          <h4 className="text-lg font-bold text-foreground mb-3">{title}</h4>
+          <div className="flex items-center justify-between mb-3">
+            <h4 className="text-lg font-bold text-foreground">{title}</h4>
+            {category && (
+              <span className="px-2 py-1 text-xs rounded-full bg-primary/20 text-primary border border-primary/30">
+                {category}
+              </span>
+            )}
+          </div>
           
           <div className="space-y-2 mb-4">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
