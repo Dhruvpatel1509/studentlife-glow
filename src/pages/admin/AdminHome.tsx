@@ -88,7 +88,8 @@ const AdminHome = () => {
           month: date.toLocaleDateString("en-US", { month: "short" }),
           events: 0,
           registrations: 0,
-          prosts: 0
+          prosts: 0,
+          likes: 0
         };
       });
 
@@ -102,6 +103,7 @@ const AdminHome = () => {
         if (monthIndex >= 0) {
           monthlyData[monthIndex].events++;
           monthlyData[monthIndex].prosts += event.prosts || 0;
+          monthlyData[monthIndex].likes += event.likes || 0;
         }
       });
 
@@ -279,11 +281,11 @@ const AdminHome = () => {
 
         {/* Charts Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          {/* Event Trends */}
+          {/* Events & Registrations */}
           <Card className="glass-card">
             <CardHeader>
-              <CardTitle>Event Trends</CardTitle>
-              <CardDescription>Monthly events, registrations, and prosts (last 6 months)</CardDescription>
+              <CardTitle>Events & Registrations</CardTitle>
+              <CardDescription>Monthly events and registrations (last 6 months)</CardDescription>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
@@ -299,9 +301,35 @@ const AdminHome = () => {
                     }}
                   />
                   <Legend />
-                  <Line type="monotone" dataKey="events" stroke="#3b82f6" strokeWidth={2} />
-                  <Line type="monotone" dataKey="registrations" stroke="#f97316" strokeWidth={2} />
-                  <Line type="monotone" dataKey="prosts" stroke="#06b6d4" strokeWidth={2} />
+                  <Line type="monotone" dataKey="events" stroke="#3b82f6" strokeWidth={2} name="Events" />
+                  <Line type="monotone" dataKey="registrations" stroke="#f97316" strokeWidth={2} name="Registrations" />
+                </LineChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+
+          {/* Likes & Prosts */}
+          <Card className="glass-card">
+            <CardHeader>
+              <CardTitle>Engagement Metrics</CardTitle>
+              <CardDescription>Monthly likes and prosts (last 6 months)</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={eventTrends}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                  <XAxis dataKey="month" stroke="#9ca3af" />
+                  <YAxis stroke="#9ca3af" />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: '#1f2937', 
+                      border: '1px solid #374151',
+                      borderRadius: '8px'
+                    }}
+                  />
+                  <Legend />
+                  <Line type="monotone" dataKey="likes" stroke="#10b981" strokeWidth={2} name="Likes" />
+                  <Line type="monotone" dataKey="prosts" stroke="#06b6d4" strokeWidth={2} name="Prosts" />
                 </LineChart>
               </ResponsiveContainer>
             </CardContent>
