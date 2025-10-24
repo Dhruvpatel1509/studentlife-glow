@@ -119,21 +119,23 @@ const CarouselSection = () => {
       image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800&h=400&fit=crop",
       content: (
         <div className="space-y-4">
-          <div className="flex items-center justify-between mb-2">
-            <h4 className="font-semibold text-lg text-primary">Recent News</h4>
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={() => window.open('https://www.whz.de/hochschule/informationen/pressemitteilungen/?no_cache=1', '_blank')}
-              className="text-xs"
-            >
-              View All News →
-            </Button>
+          <div className="space-y-3 mb-6">
+            <div className="flex items-center justify-between">
+              <h4 className="font-semibold text-lg text-primary">Recent News</h4>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => window.open('https://www.whz.de/hochschule/informationen/pressemitteilungen/?no_cache=1', '_blank')}
+                className="text-xs hover:bg-primary/10"
+              >
+                View All News →
+              </Button>
+            </div>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Stay up to date with the latest announcements, research achievements, events, and important updates from WHZ. 
+              Get insights into campus developments, student activities, and academic excellence.
+            </p>
           </div>
-          <p className="text-sm text-muted-foreground mb-4">
-            Stay up to date with the latest announcements, research achievements, events, and important updates from WHZ. 
-            Get insights into campus developments, student activities, and academic excellence.
-          </p>
           {loadingNews ? (
             <div className="text-center text-muted-foreground py-8">Loading news...</div>
           ) : (
@@ -142,22 +144,22 @@ const CarouselSection = () => {
                 {
                   id: "fallback-1",
                   title: "Visit the WHZ News Portal",
-                  summary: "Latest campus updates, events and research highlights.",
+                  summary: "Latest campus updates, events and research highlights from Westsächsische Hochschule Zwickau.",
                   imageUrl: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800&h=400&fit=crop"
                 }
               ]).map((news) => (
-                <div key={news.id} className="p-4 rounded-lg bg-muted/20 border border-primary/10">
+                <div key={news.id} className="p-4 rounded-lg bg-muted/20 border border-primary/10 hover:border-primary/30 transition-all">
                   <div className="flex gap-4">
                     {news.imageUrl && (
                       <img 
                         src={news.imageUrl} 
                         alt={news.title}
-                        className="w-32 h-32 object-cover rounded-lg"
+                        className="w-32 h-32 object-cover rounded-lg flex-shrink-0"
                       />
                     )}
                     <div className="flex-1">
                       <p className="font-semibold text-foreground mb-2">{news.title}</p>
-                      <p className="text-sm text-muted-foreground">{news.summary}</p>
+                      <p className="text-sm text-muted-foreground line-clamp-3">{news.summary}</p>
                     </div>
                   </div>
                 </div>
@@ -172,14 +174,13 @@ const CarouselSection = () => {
   const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % slides.length);
   const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
 
-  // Auto-play carousel
-  useEffect(() => {
-    const interval = setInterval(() => {
-      nextSlide();
-    }, 5000); // Change slide every 5 seconds
-
-    return () => clearInterval(interval);
-  }, [currentSlide]);
+  // Auto-play carousel - DISABLED
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     nextSlide();
+  //   }, 5000);
+  //   return () => clearInterval(interval);
+  // }, [currentSlide]);
 
   const CurrentIcon = slides[currentSlide].icon;
 
