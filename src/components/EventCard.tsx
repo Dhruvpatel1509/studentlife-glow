@@ -80,36 +80,38 @@ const EventCard = ({ title, location, time, image }: EventCardProps) => {
             </div>
           </div>
           
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleLike}
-              className={`flex-1 ${
-                isLiked
-                  ? "bg-primary/20 border-primary/40 text-primary"
-                  : "glass-card border-primary/20"
-              }`}
-            >
-              <Heart className={`w-4 h-4 mr-1 ${isLiked ? "fill-primary" : ""}`} />
-              {likes}
-            </Button>
-            
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleProst}
-              className="flex-1 glass-card border-primary/20 hover:border-secondary/40"
-            >
-              <Wine className="w-4 h-4 mr-1" />
-              {prosts}
-            </Button>
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleLike}
+                className={`flex-1 ${
+                  isLiked
+                    ? "bg-primary/20 border-primary/40 text-primary"
+                    : "glass-card border-primary/20"
+                }`}
+              >
+                <Heart className={`w-4 h-4 mr-1 ${isLiked ? "fill-primary" : ""}`} />
+                {likes}
+              </Button>
+              
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleProst}
+                className="flex-1 glass-card border-primary/20 hover:border-secondary/40"
+              >
+                <Wine className="w-4 h-4 mr-1" />
+                {prosts}
+              </Button>
+            </div>
             
             <Button
               variant="default"
               size="sm"
               onClick={handleRegister}
-              className="flex-1 bg-primary hover:bg-primary/80 text-primary-foreground"
+              className="w-full bg-primary hover:bg-primary/80 text-primary-foreground"
             >
               <FileText className="w-4 h-4 mr-1" />
               Register

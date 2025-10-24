@@ -8,44 +8,44 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 220 26% 6%;
-    --foreground: 180 100% 90%;
+    --background: 270 60% 98%;
+    --foreground: 270 40% 15%;
 
-    --card: 220 20% 10%;
-    --card-foreground: 180 100% 90%;
+    --card: 270 50% 97%;
+    --card-foreground: 270 40% 15%;
 
-    --popover: 220 24% 8%;
-    --popover-foreground: 180 100% 90%;
+    --popover: 270 55% 96%;
+    --popover-foreground: 270 40% 15%;
 
-    --primary: 160 84% 39%;
-    --primary-foreground: 220 26% 6%;
+    --primary: 270 70% 60%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 180 100% 35%;
-    --secondary-foreground: 220 26% 6%;
+    --secondary: 280 65% 55%;
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 220 20% 20%;
-    --muted-foreground: 180 20% 60%;
+    --muted: 270 30% 90%;
+    --muted-foreground: 270 20% 45%;
 
-    --accent: 160 84% 39%;
-    --accent-foreground: 220 26% 6%;
+    --accent: 290 75% 65%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 72% 51%;
-    --destructive-foreground: 180 100% 90%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 220 20% 18%;
-    --input: 220 20% 18%;
-    --ring: 160 84% 39%;
+    --border: 270 40% 85%;
+    --input: 270 40% 85%;
+    --ring: 270 70% 60%;
 
-    --radius: 0.75rem;
+    --radius: 1rem;
 
     /* Glassmorphism */
-    --glass-bg: 220 20% 10% / 0.4;
-    --glass-border: 180 100% 35% / 0.2;
-    --glass-shadow: 0 8px 32px 0 hsl(220 26% 6% / 0.37);
+    --glass-bg: 270 60% 98% / 0.5;
+    --glass-border: 270 70% 60% / 0.3;
+    --glass-shadow: 0 8px 32px 0 hsl(270 70% 60% / 0.2);
     
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(160 84% 39%) 0%, hsl(180 100% 35%) 100%);
-    --gradient-card: linear-gradient(135deg, hsl(220 20% 12% / 0.6) 0%, hsl(220 24% 8% / 0.4) 100%);
+    --gradient-primary: linear-gradient(135deg, hsl(270 70% 60%) 0%, hsl(290 75% 65%) 100%);
+    --gradient-card: linear-gradient(135deg, hsl(270 60% 98% / 0.7) 0%, hsl(280 65% 96% / 0.6) 100%);
     
     /* Animations */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -59,21 +59,21 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
-    background: linear-gradient(135deg, hsl(220 26% 6%) 0%, hsl(220 30% 8%) 50%, hsl(220 26% 6%) 100%);
+    background: linear-gradient(135deg, hsl(270 60% 98%) 0%, hsl(280 65% 96%) 50%, hsl(290 60% 97%) 100%);
     min-height: 100vh;
   }
 }
 
 @layer utilities {
   .glass-card {
-    background: linear-gradient(135deg, hsl(220 20% 12% / 0.6) 0%, hsl(220 24% 8% / 0.4) 100%);
+    background: linear-gradient(135deg, hsl(270 60% 98% / 0.7) 0%, hsl(280 65% 96% / 0.6) 100%);
     backdrop-filter: blur(16px);
-    border: 1px solid hsl(180 100% 35% / 0.2);
-    box-shadow: 0 8px 32px 0 hsl(220 26% 6% / 0.37);
+    border: 1px solid hsl(270 70% 60% / 0.3);
+    box-shadow: 0 8px 32px 0 hsl(270 70% 60% / 0.2);
   }
   
   .gradient-text {
-    background: linear-gradient(135deg, hsl(160 84% 39%) 0%, hsl(180 100% 35%) 100%);
+    background: linear-gradient(135deg, hsl(270 70% 60%) 0%, hsl(290 75% 65%) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -84,8 +84,8 @@ All colors MUST be HSL.
   }
   
   .hover-glow:hover {
-    box-shadow: 0 0 20px hsl(160 84% 39% / 0.4), 0 8px 32px 0 hsl(220 26% 6% / 0.37);
-    border-color: hsl(160 84% 39% / 0.6);
+    box-shadow: 0 0 25px hsl(270 70% 60% / 0.4), 0 8px 32px 0 hsl(270 70% 60% / 0.3);
+    border-color: hsl(270 70% 60% / 0.5);
   }
   
   .custom-scrollbar::-webkit-scrollbar {
@@ -93,16 +93,16 @@ All colors MUST be HSL.
   }
   
   .custom-scrollbar::-webkit-scrollbar-track {
-    background: hsl(220 20% 18%);
+    background: hsl(270 30% 90%);
     border-radius: 3px;
   }
   
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: hsl(160 84% 39% / 0.5);
+    background: hsl(270 70% 60% / 0.5);
     border-radius: 3px;
   }
   
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: hsl(160 84% 39%);
+    background: hsl(270 70% 60%);
   }
 }

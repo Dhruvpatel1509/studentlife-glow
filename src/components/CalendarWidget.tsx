@@ -49,46 +49,46 @@ const CalendarWidget = () => {
 
   return (
     <Card className="glass-card hover-glow p-6 animate-fade-in">
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
-          <CalendarIcon className="w-5 h-5 text-primary" />
-          <h3 className="text-lg font-semibold gradient-text">Calendar</h3>
+          <CalendarIcon className="w-6 h-6 text-primary" />
+          <h3 className="text-xl font-semibold gradient-text">Calendar</h3>
         </div>
         <div className="flex items-center gap-1">
           <Button
             variant="ghost"
             size="icon"
             onClick={previousMonth}
-            className="h-8 w-8 hover:bg-primary/10"
+            className="h-10 w-10 hover:bg-primary/10"
           >
-            <ChevronLeft className="w-4 h-4" />
+            <ChevronLeft className="w-5 h-5" />
           </Button>
           <Button
             variant="ghost"
             size="icon"
             onClick={nextMonth}
-            className="h-8 w-8 hover:bg-primary/10"
+            className="h-10 w-10 hover:bg-primary/10"
           >
-            <ChevronRight className="w-4 h-4" />
+            <ChevronRight className="w-5 h-5" />
           </Button>
         </div>
       </div>
 
-      <div className="text-center mb-4">
-        <p className="text-sm font-semibold text-foreground">
+      <div className="text-center mb-6">
+        <p className="text-base font-bold text-foreground">
           {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
         </p>
       </div>
 
-      <div className="grid grid-cols-7 gap-1 mb-2">
+      <div className="grid grid-cols-7 gap-2 mb-3">
         {["S", "M", "T", "W", "T", "F", "S"].map((day, i) => (
-          <div key={i} className="text-center text-xs font-medium text-muted-foreground">
+          <div key={i} className="text-center text-sm font-semibold text-muted-foreground py-2">
             {day}
           </div>
         ))}
       </div>
 
-      <div className="grid grid-cols-7 gap-1 relative">
+      <div className="grid grid-cols-7 gap-2 relative">
         {Array.from({ length: firstDay }).map((_, i) => (
           <div key={`empty-${i}`} className="aspect-square" />
         ))}
@@ -105,22 +105,22 @@ const CalendarWidget = () => {
               onMouseLeave={() => setHoveredDate(null)}
             >
               <div
-                className={`aspect-square flex items-center justify-center text-sm rounded-lg cursor-pointer transition-all duration-200 ${
+                className={`aspect-square flex items-center justify-center text-base rounded-lg cursor-pointer transition-all duration-200 ${
                   isToday
-                    ? "bg-primary text-primary-foreground font-bold"
+                    ? "bg-primary text-primary-foreground font-bold shadow-lg scale-105"
                     : hasEvent
-                    ? "bg-secondary/20 hover:bg-secondary/30 text-foreground"
-                    : "hover:bg-muted/20 text-muted-foreground"
+                    ? "bg-secondary/20 hover:bg-secondary/30 text-foreground font-medium"
+                    : "hover:bg-muted/20 text-muted-foreground hover:scale-105"
                 }`}
               >
                 {day}
                 {hasEvent && (
-                  <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-primary rounded-full" />
+                  <div className="absolute bottom-1.5 left-1/2 transform -translate-x-1/2 w-1.5 h-1.5 bg-primary rounded-full" />
                 )}
               </div>
               
               {hoveredDate === day && hasEvent && (
-                <div className="absolute z-50 top-full left-1/2 transform -translate-x-1/2 mt-1 px-2 py-1 bg-card border border-primary/30 rounded shadow-lg whitespace-nowrap text-xs">
+                <div className="absolute z-50 top-full left-1/2 transform -translate-x-1/2 mt-2 px-3 py-2 bg-card border border-primary/30 rounded-lg shadow-lg whitespace-nowrap text-sm font-medium">
                   {eventDetails[day]}
                 </div>
               )}

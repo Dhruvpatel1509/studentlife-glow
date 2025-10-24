@@ -13,30 +13,20 @@ interface TimeEntry {
 
 const TimeTracker = () => {
   const [entries, setEntries] = useState<TimeEntry[]>([
-    { activity: "Library", hours: 2, color: "#10b981" },
-    { activity: "Class", hours: 3, color: "#06b6d4" },
-    { activity: "Commute", hours: 1, color: "#8b5cf6" },
+    { activity: "Library", hours: 2, color: "#a855f7" },
+    { activity: "Class", hours: 3, color: "#8b5cf6" },
+    { activity: "Commute", hours: 1, color: "#c084fc" },
   ]);
-  
-  const [newActivity, setNewActivity] = useState("");
-  const [newHours, setNewHours] = useState("");
 
   const totalHours = entries.reduce((sum, entry) => sum + entry.hours, 0);
 
-  const addEntry = () => {
-    if (newActivity && newHours) {
-      const hours = parseFloat(newHours);
-      if (hours > 0) {
-        const colors = ["#f59e0b", "#ef4444", "#ec4899", "#3b82f6"];
-        const randomColor = colors[Math.floor(Math.random() * colors.length)];
-        
-        setEntries([...entries, { activity: newActivity, hours, color: randomColor }]);
-        setNewActivity("");
-        setNewHours("");
-        toast.success("Time entry added!");
-      }
-    } else {
-      toast.error("Please fill in both fields");
+  const updateHours = (index: number, newHours: string) => {
+    const hours = parseFloat(newHours);
+    if (hours >= 0 && !isNaN(hours)) {
+      const newEntries = [...entries];
+      newEntries[index].hours = hours;
+      setEntries(newEntries);
+      toast.success("Time updated!");
     }
   };
 
@@ -63,45 +53,25 @@ const TimeTracker = () => {
         <h3 className="text-lg font-semibold gradient-text">Time Tracker</h3>
       </div>
 
-      <div className="space-y-4 mb-4">
+      <div className="space-y-3 mb-6">
         {entries.map((entry, index) => (
-          <div key={index} className="flex items-center gap-2">
+          <div key={index} className="flex items-center gap-3 p-3 rounded-lg bg-muted/20 border border-primary/10">
             <div
-              className="w-3 h-3 rounded-full"
+              className="w-4 h-4 rounded-full shrink-0"
               style={{ backgroundColor: entry.color }}
             />
+            <span className="text-sm font-medium text-foreground flex-grow">{entry.activity}</span>
             <Input
-              value={`${entry.activity} - ${entry.hours}h`}
-              readOnly
-              className="glass-card border-primary/20 text-sm"
+              type="number"
+              value={entry.hours}
+              onChange={(e) => updateHours(index, e.target.value)}
+              className="glass-card border-primary/20 text-sm w-20 text-center"
+              step="0.5"
+              min="0"
             />
+            <span className="text-sm text-muted-foreground">h</span>
           </div>
         ))}
-        
-        <div className="flex gap-2">
-          <Input
-            placeholder="Activity"
-            value={newActivity}
-            onChange={(e) => setNewActivity(e.target.value)}
-            className="glass-card border-primary/20 text-sm"
-          />
-          <Input
-            type="number"
-            placeholder="Hours"
-            value={newHours}
-            onChange={(e) => setNewHours(e.target.value)}
-            className="glass-card border-primary/20 text-sm w-20"
-            step="0.5"
-            min="0"
-          />
-          <Button
-            size="icon"
-            onClick={addEntry}
-            className="bg-primary hover:bg-primary/80 shrink-0"
-          >
-            <Plus className="w-4 h-4" />
-          </Button>
-        </div>
       </div>
 
       {/* Donut Chart */}
@@ -113,7 +83,7 @@ const TimeTracker = () => {
               cy="50"
               r="40"
               fill="none"
-              stroke="hsl(220 20% 18%)"
+              stroke="hsl(270 30% 90%)"
               strokeWidth="20"
             />
             {getDonutSegments().map((segment, index) => {
@@ -135,7 +105,7 @@ const TimeTracker = () => {
                 />
               );
             })}
-            <circle cx="50" cy="50" r="25" fill="hsl(220 26% 6%)" />
+            <circle cx="50" cy="50" r="25" fill="hsl(270 60% 98%)" />
           </svg>
           
           <div className="absolute inset-0 flex flex-col items-center justify-center">

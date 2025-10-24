@@ -2,7 +2,7 @@ import Navbar from "@/components/Navbar";
 import TimetableCard from "@/components/TimetableCard";
 import RegisteredEventsCard from "@/components/RegisteredEventsCard";
 import NewsletterCard from "@/components/NewsletterCard";
-import DiscordFeedCard from "@/components/DiscordFeedCard";
+
 import KnowledgeCentreCard from "@/components/KnowledgeCentreCard";
 import CarouselSection from "@/components/CarouselSection";
 import TrendingEvents from "@/components/TrendingEvents";
@@ -25,11 +25,10 @@ const Index = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* LEFT PANE */}
           <div className="lg:col-span-3 space-y-6">
-            <TimetableCard />
-            <RegisteredEventsCard />
-            <NewsletterCard />
-            <DiscordFeedCard />
-            <KnowledgeCentreCard />
+          <TimetableCard />
+          <RegisteredEventsCard />
+          <NewsletterCard />
+          <KnowledgeCentreCard />
           </div>
 
           {/* MIDDLE PANE */}
