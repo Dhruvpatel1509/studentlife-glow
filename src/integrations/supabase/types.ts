@@ -124,6 +124,45 @@ export type Database = {
         }
         Relationships: []
       }
+      timetable: {
+        Row: {
+          course: string
+          created_at: string | null
+          cycle: string | null
+          day_name: string
+          day_time: string
+          id: string
+          instructor: string | null
+          room: string | null
+          sem_group: string
+          updated_at: string | null
+        }
+        Insert: {
+          course: string
+          created_at?: string | null
+          cycle?: string | null
+          day_name: string
+          day_time: string
+          id?: string
+          instructor?: string | null
+          room?: string | null
+          sem_group?: string
+          updated_at?: string | null
+        }
+        Update: {
+          course?: string
+          created_at?: string | null
+          cycle?: string | null
+          day_name?: string
+          day_time?: string
+          id?: string
+          instructor?: string | null
+          room?: string | null
+          sem_group?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string | null
