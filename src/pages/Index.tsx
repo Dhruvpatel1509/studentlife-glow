@@ -11,6 +11,7 @@ import MySpaceForm from "@/components/MySpaceForm";
 import WordOfTheDay from "@/components/WordOfTheDay";
 import TimeTracker from "@/components/TimeTracker";
 import WalletCard from "@/components/WalletCard";
+import ExamPlanCard from "@/components/ExamPlanCard";
 
 const Index = () => {
   return (
@@ -22,6 +23,7 @@ const Index = () => {
           {/* LEFT PANE */}
           <div className="lg:col-span-3 space-y-6">
           <TimetableCard />
+          <ExamPlanCard />
           <RegisteredEventsCard />
           <NewsletterCard />
           <KnowledgeCentreCard />
