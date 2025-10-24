@@ -29,6 +29,42 @@ const WordOfTheDay = () => {
       example: "Freundschaft ist wichtig.",
       translation: "Friendship is important."
     },
+    {
+      german: "Gesundheit",
+      english: "Health",
+      example: "Gesundheit ist das Wichtigste.",
+      translation: "Health is the most important thing."
+    },
+    {
+      german: "Abenteuer",
+      english: "Adventure",
+      example: "Das Leben ist ein Abenteuer.",
+      translation: "Life is an adventure."
+    },
+    {
+      german: "Wissenschaft",
+      english: "Science",
+      example: "Die Wissenschaft macht Fortschritte.",
+      translation: "Science is making progress."
+    },
+    {
+      german: "Geburtstag",
+      english: "Birthday",
+      example: "Heute ist mein Geburtstag.",
+      translation: "Today is my birthday."
+    },
+    {
+      german: "Nachbarschaft",
+      english: "Neighborhood",
+      example: "Ich mag meine Nachbarschaft.",
+      translation: "I like my neighborhood."
+    },
+    {
+      german: "Sonnenschein",
+      english: "Sunshine",
+      example: "Der Sonnenschein ist wunderbar.",
+      translation: "The sunshine is wonderful."
+    },
   ];
 
   const [currentIndex, setCurrentIndex] = useState(0);

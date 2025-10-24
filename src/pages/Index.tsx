@@ -25,7 +25,6 @@ const Index = () => {
           <div className="lg:col-span-3 space-y-6">
           <TimetableCard />
           <ExamPlanCard />
-          <RegisteredEventsCard />
           <NewsletterCard />
           <KnowledgeCentreCard />
           </div>

@@ -24,15 +24,7 @@ const GreetingSection = () => {
         {getGreeting()}! 👋
       </h3>
       <p className="text-lg font-semibold text-primary mb-2">{getCurrentTime()}</p>
-      <p className="text-sm text-muted-foreground mb-4">Ready to conquer your day?</p>
-      
-      <div className="flex justify-end">
-        <Avatar className="w-16 h-16 border-2 border-primary/50">
-          <AvatarFallback className="bg-primary/20 text-primary text-xl font-bold">
-            AM
-          </AvatarFallback>
-        </Avatar>
-      </div>
+      <p className="text-sm text-muted-foreground">Ready to conquer your day?</p>
     </Card>
   );
 };

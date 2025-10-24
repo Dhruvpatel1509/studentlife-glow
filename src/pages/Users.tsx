@@ -43,8 +43,8 @@ const Users = () => {
   return (
     <div className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-br from-background via-background/95 to-primary/5">
       <div className="w-full max-w-6xl">
-        <div className="text-center mb-12 animate-fade-in">
-          <h1 className="text-5xl font-bold gradient-text mb-4">Welcome to Zwickly</h1>
+        <div className="text-center mb-12 animate-fade-in px-4">
+          <h1 className="text-5xl font-bold gradient-text mb-4 pb-2">Welcome to Zwickly</h1>
           <p className="text-muted-foreground text-lg">Choose your portal to continue</p>
         </div>
 
