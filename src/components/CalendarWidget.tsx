@@ -105,7 +105,7 @@ const CalendarWidget = () => {
               onMouseLeave={() => setHoveredDate(null)}
             >
               <div
-                className={`aspect-square flex items-center justify-center text-base rounded-lg cursor-pointer transition-all duration-200 ${
+                className={`aspect-square flex flex-col items-center justify-center text-base rounded-lg cursor-pointer transition-all duration-200 ${
                   isToday
                     ? "bg-primary text-primary-foreground font-bold shadow-lg scale-105"
                     : hasEvent
@@ -113,9 +113,9 @@ const CalendarWidget = () => {
                     : "hover:bg-muted/20 text-muted-foreground hover:scale-105"
                 }`}
               >
-                {day}
+                <span className="mb-0.5">{day}</span>
                 {hasEvent && (
-                  <div className="absolute bottom-1.5 left-1/2 transform -translate-x-1/2 w-1.5 h-1.5 bg-primary rounded-full" />
+                  <div className="w-1.5 h-1.5 bg-primary rounded-full" />
                 )}
               </div>
               

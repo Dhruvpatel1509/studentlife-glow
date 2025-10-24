@@ -1,4 +1,4 @@
-import { Flame } from "lucide-react";
+import { TrendingUp } from "lucide-react";
 import EventCard from "./EventCard";
 
 const TrendingEvents = () => {
@@ -32,7 +32,7 @@ const TrendingEvents = () => {
   return (
     <div className="animate-fade-in">
       <div className="flex items-center gap-2 mb-6">
-        <Flame className="w-6 h-6 text-orange-500 animate-glow" />
+        <TrendingUp className="w-6 h-6 text-primary animate-glow" />
         <h3 className="text-2xl font-bold gradient-text">Trending Events</h3>
       </div>
       
