@@ -18,22 +18,37 @@ export const fetchVmsSchedule = async (): Promise<VmsEntry[]> => {
 };
 
 const fetchWithFallback = async (url: string): Promise<string> => {
-  try {
-    const res = await fetch(url);
-    if (res.ok) return await res.text();
-    throw new Error(`Status ${res.status}`);
-  } catch (e) {
-    const proxies = [
-      (u: string) => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
-    ];
-    for (const p of proxies) {
-      try {
-        const res = await fetch(p(url));
-        if (res.ok) return await res.text();
-      } catch {}
+  // Try multiple CORS proxies in sequence
+  const proxies = [
+    (u: string) => u, // Direct fetch first
+    (u: string) => `https://corsproxy.io/?${encodeURIComponent(u)}`,
+    (u: string) => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
+    (u: string) => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
+  ];
+  
+  for (const proxyFn of proxies) {
+    try {
+      const proxyUrl = proxyFn(url);
+      const res = await fetch(proxyUrl, {
+        method: 'GET',
+        headers: {
+          'Accept': 'text/html,application/xhtml+xml,application/xml',
+        },
+      });
+      
+      if (res.ok) {
+        const text = await res.text();
+        if (text && text.length > 0) {
+          return text;
+        }
+      }
+    } catch (error) {
+      // Continue to next proxy
+      console.log(`Proxy attempt failed, trying next...`);
     }
-    throw e;
   }
+  
+  throw new Error('All proxy attempts failed');
 };
 
 const parseVmsData = (html: string): VmsEntry[] => {
@@ -41,26 +56,54 @@ const parseVmsData = (html: string): VmsEntry[] => {
   const doc = parser.parseFromString(html, "text/html");
   const entries: VmsEntry[] = [];
   
+  // Try to extract text content
   const bodyText = doc.body.textContent || "";
   const lines = bodyText.split('\n').map(line => line.trim()).filter(line => line);
   
-  for (let i = 0; i < lines.length; i++) {
-    if (lines[i].includes('Uhr') && lines[i + 1]?.includes('Uhr')) {
-      const departureTime = lines[i].replace('Uhr', '').trim();
-      const arrivalTime = lines[i + 1].replace('Uhr', '').trim();
-      const line = lines[i + 2] || '';
-      const location = lines[i + 3] || '';
+  // Look for time patterns and parse accordingly
+  let i = 0;
+  while (i < lines.length) {
+    const line = lines[i];
+    
+    // Check if this line contains a time (HH:MM:SS Uhr format)
+    if (line.match(/\d{1,2}:\d{2}:\d{2}\s+Uhr/)) {
+      const departureTime = line.replace(/\s+Uhr.*/, '').trim();
       
-      if (line && location) {
-        entries.push({
-          departureTime,
-          arrivalTime,
-          line,
-          location,
-        });
-        i += 3;
+      // Next line should be arrival time
+      if (i + 1 < lines.length && lines[i + 1].match(/\d{1,2}:\d{2}:\d{2}\s+Uhr/)) {
+        const arrivalTime = lines[i + 1].replace(/\s+Uhr.*/, '').trim();
+        
+        // Next should be the line name
+        let lineName = '';
+        let location = '';
+        
+        if (i + 2 < lines.length) {
+          lineName = lines[i + 2];
+        }
+        
+        if (i + 3 < lines.length) {
+          location = lines[i + 3];
+        }
+        
+        if (lineName && location) {
+          entries.push({
+            departureTime,
+            arrivalTime,
+            line: lineName,
+            location,
+          });
+        }
+        
+        i += 4;
+        continue;
       }
     }
+    i++;
+  }
+  
+  // Fallback: If no entries found, return some sample data to show the structure works
+  if (entries.length === 0) {
+    console.warn("No transport data could be parsed from API response");
   }
   
   return entries;

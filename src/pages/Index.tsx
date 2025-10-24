@@ -24,7 +24,6 @@ const Index = () => {
           {/* LEFT PANE */}
           <div className="lg:col-span-3 space-y-6">
           <TimetableCard />
-          <TransportScheduleCard />
           <ExamPlanCard />
           <RegisteredEventsCard />
           <NewsletterCard />
@@ -45,6 +44,7 @@ const Index = () => {
             <MySpaceForm />
             <WordOfTheDay />
             <TimeTracker />
+            <TransportScheduleCard />
           </div>
         </div>
       </main>

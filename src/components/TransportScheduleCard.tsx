@@ -8,17 +8,22 @@ import { useToast } from "@/hooks/use-toast";
 const TransportScheduleCard = () => {
   const [schedule, setSchedule] = useState<VmsEntry[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const { toast } = useToast();
 
   const loadSchedule = async () => {
     setLoading(true);
+    setError(false);
     try {
       const data = await fetchVmsSchedule();
       setSchedule(data);
+      setError(false);
     } catch (error) {
+      console.error("Failed to load transport schedule:", error);
+      setError(true);
       toast({
-        title: "Error",
-        description: "Failed to fetch transport schedule. Please try again.",
+        title: "Connection Error",
+        description: "Unable to load transport schedule. Click refresh to try again.",
         variant: "destructive",
       });
     } finally {
@@ -50,6 +55,13 @@ const TransportScheduleCard = () => {
 
       {loading ? (
         <div className="text-center text-muted-foreground py-8">Loading schedule...</div>
+      ) : error ? (
+        <div className="text-center py-8">
+          <p className="text-muted-foreground mb-3">Unable to load transport data</p>
+          <Button onClick={loadSchedule} variant="outline" size="sm">
+            Try Again
+          </Button>
+        </div>
       ) : schedule.length === 0 ? (
         <div className="text-center text-muted-foreground py-8">No transport data available</div>
       ) : (
