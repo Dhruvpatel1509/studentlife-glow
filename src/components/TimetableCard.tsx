@@ -38,17 +38,20 @@ const TimetableCard = () => {
             >
               <div className="flex items-center gap-2 text-sm text-primary mb-1">
                 <Clock className="w-4 h-4" />
-                <span className="font-medium">{item.time}</span>
+                <span className="font-medium">{item.dayTime}</span>
               </div>
-              <p className="font-semibold text-foreground mb-1">{item.subject}</p>
-              {item.professor && (
-                <p className="text-sm text-primary mb-1">👨‍🏫 {item.professor}</p>
+              <p className="font-semibold text-foreground mb-1">{item.course}</p>
+              {item.instructor && (
+                <p className="text-sm text-primary mb-1">👨‍🏫 {item.instructor}</p>
               )}
-              {item.location && (
+              {item.room && (
                 <div className="flex items-center gap-1 text-xs text-muted-foreground">
                   <MapPin className="w-3 h-3" />
-                  <span>{item.location}</span>
+                  <span>{item.room}</span>
                 </div>
+              )}
+              {item.cycle && (
+                <p className="text-xs text-muted-foreground">🔄 {item.cycle}</p>
               )}
             </div>
           ))}

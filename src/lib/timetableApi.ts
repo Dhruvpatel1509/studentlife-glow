@@ -1,8 +1,9 @@
 export interface TimetableEntry {
-  time: string;
-  subject: string;
-  location: string;
-  professor: string;
+  dayTime: string;
+  course: string;
+  room: string;
+  instructor: string;
+  cycle: string;
 }
 
 const API_BASE_URL = "https://mobile.whz.de/stplan/get_stplan.php";
@@ -31,59 +32,30 @@ export const fetchTimetable = async (dayId?: string): Promise<TimetableEntry[]> 
     const url = `${API_BASE_URL}?dayId=${day}&semGrp=${SEM_GROUP}&uid=${UID}`;
     
     const response = await fetch(url);
-    const html = await response.text();
+    const text = await response.text();
     
-    return parseTimetableHTML(html);
+    return parseTimetableText(text);
   } catch (error) {
     console.error("Error fetching timetable:", error);
     return [];
   }
 };
 
-const parseTimetableHTML = (html: string): TimetableEntry[] => {
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(html, "text/html");
-  const entries: TimetableEntry[] = [];
-  
-  const panels = doc.querySelectorAll(".panel");
-  
-  panels.forEach((panel) => {
-    const heading = panel.querySelector(".panel-heading b")?.textContent || "";
-    const timeMatch = heading.match(/(\d{1,2}:\d{2}\s*-\s*\d{1,2}:\d{2})\s*Uhr/);
-    
-    if (!timeMatch) return;
-    
-    const time = timeMatch[1];
-    const rows = panel.querySelectorAll("tr");
-    
-    let subject = "";
-    let location = "";
-    let professor = "";
-    
-    rows.forEach((row) => {
-      const cells = row.querySelectorAll("td");
-      
-      if (cells.length === 2) {
-        const label = cells[0].textContent?.trim() || "";
-        const value = cells[1].textContent?.trim() || "";
-        
-        if (label === "Raum") {
-          location = value.split(" ")[0]; // Extract room number before "Karte"
-        } else if (label === "Dozent") {
-          professor = value;
-        }
-      } else if (cells.length === 1) {
-        const text = cells[0].textContent?.trim() || "";
-        if (text && !text.startsWith("Raum") && !text.startsWith("Dozent")) {
-          subject = text;
-        }
-      }
-    });
-    
-    if (subject && time) {
-      entries.push({ time, subject, location, professor });
-    }
+const parseTimetableText = (text: string): TimetableEntry[] => {
+  // Split the raw response by blank lines (each block = one class entry)
+  const blocks = text.trim().split(/\n\s*\n/);
+
+  // Convert each block into an object (course details)
+  const parsed = blocks.map((block) => {
+    const lines = block.split("\n").map((l) => l.trim());
+    return {
+      dayTime: lines[0] || "",
+      course: lines[1] || "",
+      room: (lines[2] || "").replace("Raum", "").trim(),
+      instructor: (lines[3] || "").replace("Dozent", "").trim(),
+      cycle: (lines[4] || "").replace("Zyklus", "").trim(),
+    };
   });
-  
-  return entries;
+
+  return parsed;
 };
