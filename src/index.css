@@ -49,6 +49,13 @@ All colors MUST be HSL.
     
     /* Animations */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    /* Admin Theme - Orange */
+    --admin-primary: 24 95% 53%;
+    --admin-primary-foreground: 0 0% 100%;
+    --admin-secondary: 33 100% 50%;
+    --admin-accent: 16 90% 48%;
+    --admin-gradient: linear-gradient(135deg, hsl(24 95% 53%) 0%, hsl(33 100% 50%) 100%);
   }
 }
 
@@ -104,5 +111,31 @@ All colors MUST be HSL.
   
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: hsl(270 70% 60%);
+  }
+  
+  /* Admin Theme Override */
+  .admin-theme {
+    --primary: var(--admin-primary);
+    --primary-foreground: var(--admin-primary-foreground);
+    --secondary: var(--admin-secondary);
+    --accent: var(--admin-accent);
+  }
+  
+  .admin-theme .glass-card {
+    background: linear-gradient(135deg, hsl(24 95% 98% / 0.4) 0%, hsl(33 100% 96% / 0.3) 100%);
+    border: 1px solid hsl(24 95% 53% / 0.25);
+    box-shadow: 0 8px 32px 0 hsl(24 95% 53% / 0.15);
+  }
+  
+  .admin-theme .gradient-text {
+    background: var(--admin-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .admin-theme .hover-glow:hover {
+    box-shadow: 0 0 25px hsl(24 95% 53% / 0.4), 0 8px 32px 0 hsl(24 95% 53% / 0.3);
+    border-color: hsl(24 95% 53% / 0.5);
   }
 }

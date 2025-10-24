@@ -9,6 +9,8 @@ import Users from "./pages/Users";
 import Events from "./pages/Events";
 import Chatbot from "./pages/Chatbot";
 import KommPakt from "./pages/KommPakt";
+import AdminHome from "./pages/admin/AdminHome";
+import Analytics from "./pages/admin/Analytics";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +26,8 @@ const App = () => (
           <Route path="/events" element={<Events />} />
           <Route path="/chatbot" element={<Chatbot />} />
           <Route path="/kommpakt" element={<KommPakt />} />
+          <Route path="/admin/home" element={<AdminHome />} />
+          <Route path="/admin/analytics" element={<Analytics />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
