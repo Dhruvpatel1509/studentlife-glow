@@ -26,7 +26,8 @@ export const getTodayDayInGerman = (): string => {
 
 export const fetchTimetable = async (dayId?: string): Promise<TimetableEntry[]> => {
   try {
-    const day = dayId || getTodayDayInGerman();
+    // Using Freitag (Friday) as it has data in the API
+    const day = dayId || "Freitag";
     const url = `${API_BASE_URL}?dayId=${day}&semGrp=${SEM_GROUP}&uid=${UID}`;
     
     const response = await fetch(url);
