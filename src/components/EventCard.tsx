@@ -41,16 +41,44 @@ const EventCard = ({
   const [prosts, setProsts] = useState(initialProsts);
   const [isLiked, setIsLiked] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
+  const [isRegistered, setIsRegistered] = useState(false);
+  const [isCheckingRegistration, setIsCheckingRegistration] = useState(false);
   
   useEffect(() => {
     setLikes(initialLikes);
     setProsts(initialProsts);
   }, [initialLikes, initialProsts]);
+
+  useEffect(() => {
+    checkRegistration();
+  }, [id]);
+
   const [showImageUpload, setShowImageUpload] = useState(false);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [isDetecting, setIsDetecting] = useState(false);
   const [showProstAnimation, setShowProstAnimation] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+  const checkRegistration = async () => {
+    if (!id) return;
+    
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from('event_registrations')
+        .select('id')
+        .eq('event_id', id)
+        .eq('user_id', user.id)
+        .single();
+
+      if (error && error.code !== 'PGRST116') throw error;
+      setIsRegistered(!!data);
+    } catch (error) {
+      console.error('Error checking registration:', error);
+    }
+  };
 
   const handleLike = async () => {
     const newLikes = isLiked ? likes - 1 : likes + 1;
@@ -134,8 +162,47 @@ const EventCard = ({
     }
   };
 
-  const handleRegister = () => {
-    toast.success("Registered successfully! 🎉");
+  const handleRegister = async () => {
+    if (!id) {
+      toast.error("Event ID not available");
+      return;
+    }
+
+    setIsCheckingRegistration(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error("Please log in to register for events");
+        return;
+      }
+
+      if (isRegistered) {
+        // Unregister
+        const { error } = await supabase
+          .from('event_registrations')
+          .delete()
+          .eq('event_id', id)
+          .eq('user_id', user.id);
+
+        if (error) throw error;
+        setIsRegistered(false);
+        toast.success("Unregistered successfully!");
+      } else {
+        // Register
+        const { error } = await supabase
+          .from('event_registrations')
+          .insert({ event_id: id, user_id: user.id });
+
+        if (error) throw error;
+        setIsRegistered(true);
+        toast.success("Registered successfully! 🎉");
+      }
+    } catch (error) {
+      console.error('Error registering for event:', error);
+      toast.error("Failed to register. Please try again.");
+    } finally {
+      setIsCheckingRegistration(false);
+    }
   };
 
   return (
@@ -214,10 +281,15 @@ const EventCard = ({
                 e.stopPropagation();
                 handleRegister();
               }}
-              className="w-full bg-primary hover:bg-primary/80 text-primary-foreground"
+              disabled={isCheckingRegistration}
+              className={`w-full ${
+                isRegistered
+                  ? "bg-green-600 hover:bg-green-700"
+                  : "bg-primary hover:bg-primary/80"
+              } text-primary-foreground`}
             >
               <FileText className="w-4 h-4 mr-1" />
-              Register
+              {isRegistered ? "Registered ✓" : "Register"}
             </Button>
           </div>
         </div>
@@ -345,13 +417,17 @@ const EventCard = ({
               <Button
                 onClick={(e) => {
                   e.stopPropagation();
-                  setShowDetails(false);
                   handleRegister();
                 }}
-                className="flex-1 bg-primary hover:bg-primary/80"
+                disabled={isCheckingRegistration}
+                className={`flex-1 ${
+                  isRegistered
+                    ? "bg-green-600 hover:bg-green-700"
+                    : "bg-primary hover:bg-primary/80"
+                }`}
               >
                 <FileText className="w-4 h-4 mr-2" />
-                Register Now
+                {isRegistered ? "Registered ✓" : "Register Now"}
               </Button>
             </div>
           </div>

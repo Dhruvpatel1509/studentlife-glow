@@ -1,11 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
 
 const CalendarWidget = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [hoveredDate, setHoveredDate] = useState<number | null>(null);
+  const [eventDates, setEventDates] = useState<number[]>([]);
+  const [eventDetails, setEventDetails] = useState<Record<number, string>>({});
 
   const monthNames = ["January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"];
@@ -30,22 +33,50 @@ const CalendarWidget = () => {
     setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1));
   };
 
+  useEffect(() => {
+    fetchEvents();
+  }, [currentDate]);
+
+  const fetchEvents = async () => {
+    try {
+      const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+      const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+      
+      const { data, error } = await supabase
+        .from('events')
+        .select('title, event_date')
+        .gte('event_date', startOfMonth.toISOString().split('T')[0])
+        .lte('event_date', endOfMonth.toISOString().split('T')[0]);
+
+      if (error) throw error;
+
+      const dates: number[] = [];
+      const details: Record<number, string> = {};
+      
+      data?.forEach((event) => {
+        const date = new Date(event.event_date);
+        const day = date.getDate();
+        if (!dates.includes(day)) {
+          dates.push(day);
+          details[day] = event.title;
+        } else {
+          details[day] += `, ${event.title}`;
+        }
+      });
+      
+      setEventDates(dates);
+      setEventDetails(details);
+    } catch (error) {
+      console.error('Error fetching calendar events:', error);
+    }
+  };
+
   const daysInMonth = getDaysInMonth(currentDate);
   const firstDay = getFirstDayOfMonth(currentDate);
   const today = new Date().getDate();
   const isCurrentMonth = 
     currentDate.getMonth() === new Date().getMonth() &&
     currentDate.getFullYear() === new Date().getFullYear();
-
-  // Dummy events for specific dates
-  const eventDates = [5, 9, 15, 20, 25];
-  const eventDetails: Record<number, string> = {
-    5: "Hackathon '25",
-    9: "Workshop",
-    15: "AI Bootcamp",
-    20: "Career Fair",
-    25: "Sports Day"
-  };
 
   return (
     <Card className="glass-card hover-glow p-6 animate-fade-in">
