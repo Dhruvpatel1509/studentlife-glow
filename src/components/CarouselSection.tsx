@@ -4,9 +4,23 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { fetchMensaSchedule, MensaMeal } from "@/lib/mensaApi";
 
 const CarouselSection = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [mensaMeals, setMensaMeals] = useState<MensaMeal[]>([]);
+  const [loadingMensa, setLoadingMensa] = useState(true);
+
+  useEffect(() => {
+    const loadMensaData = async () => {
+      setLoadingMensa(true);
+      const meals = await fetchMensaSchedule();
+      setMensaMeals(meals);
+      setLoadingMensa(false);
+    };
+    
+    loadMensaData();
+  }, []);
 
   const slides = [
     {
@@ -17,19 +31,44 @@ const CarouselSection = () => {
       image: "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=800&h=400&fit=crop",
       content: (
         <div className="space-y-4">
-          <h4 className="font-semibold text-lg text-primary">Weekly Menu</h4>
-          <div className="grid gap-3">
-            {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].map((day, i) => (
-              <div key={day} className="p-3 rounded-lg bg-muted/20 border border-primary/10">
-                <p className="font-semibold text-foreground mb-2">{day}</p>
-                <div className="text-sm space-y-1">
-                  <p className="text-muted-foreground">Main: Pasta Carbonara - €4.50</p>
-                  <p className="text-muted-foreground">Veg: Buddha Bowl - €4.20</p>
-                  <p className="text-muted-foreground">Dessert: Apple Strudel - €1.80</p>
+          <h4 className="font-semibold text-lg text-primary">Today's Menu</h4>
+          {loadingMensa ? (
+            <div className="text-center text-muted-foreground py-8">Loading menu...</div>
+          ) : mensaMeals.length === 0 ? (
+            <div className="text-center text-muted-foreground py-8">No menu available today</div>
+          ) : (
+            <div className="grid gap-4">
+              {mensaMeals.map((meal, i) => (
+                <div key={i} className="p-4 rounded-lg bg-muted/20 border border-primary/10">
+                  <div className="flex gap-4">
+                    {meal.imageUrl && (
+                      <img 
+                        src={meal.imageUrl} 
+                        alt={meal.title}
+                        className="w-24 h-24 object-cover rounded-lg"
+                      />
+                    )}
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <p className="font-semibold text-foreground">{meal.title}</p>
+                        {meal.isVegetarian && (
+                          <span className="text-xs bg-green-500/20 text-green-700 dark:text-green-300 px-2 py-0.5 rounded">
+                            🌱 Veggie
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-sm text-muted-foreground mb-2">{meal.description}</p>
+                      <div className="flex gap-3 text-xs text-primary">
+                        <span>S: {meal.priceSmall}</span>
+                        <span>M: {meal.priceMedium}</span>
+                        <span>G: {meal.priceLarge}</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       )
     },
