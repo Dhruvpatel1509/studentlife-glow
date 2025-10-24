@@ -7,7 +7,6 @@ const KnowledgeCentreCard = () => {
     { name: "OPAL", url: "https://bildungsportal.sachsen.de/opal/shiblogin?7", icon: "🎓" },
     { name: "WHZ Library", url: "https://www.whz.de/english/university/central-institutions/library/", icon: "📖" },
     { name: "Outlook Email", url: "https://mail.fh-zwickau.de/owa/#path=/mail", icon: "📧" },
-    { name: "Slack", url: "https://slack.com/", icon: "💬" },
     { name: "Deutsche Bahn", url: "https://www.bahn.de", icon: "🚄" },
   ];
 
