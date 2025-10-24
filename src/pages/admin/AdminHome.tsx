@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import AdminNavbar from "@/components/AdminNavbar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
-import { TrendingUp, Users, Calendar, Mail, MousePointerClick, Eye, AlertCircle, CheckCircle } from "lucide-react";
+import { TrendingUp, Users, Calendar, CheckCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -12,12 +12,6 @@ const AdminHome = () => {
     totalUsers: 0,
     totalEvents: 0,
     totalRegistrations: 0,
-    emailsSent: 0,
-    emailsOpened: 0,
-    emailsClicked: 0,
-    emailsBounced: 0,
-    ctr: 0,
-    uniqueOpens: 0,
     eventAttendance: 0,
   });
   const [eventTrends, setEventTrends] = useState<any[]>([]);
@@ -46,20 +40,6 @@ const AdminHome = () => {
       const { data: registrations, count: registrationsCount } = await supabase
         .from("event_registrations")
         .select("*", { count: "exact" });
-
-      // Fetch email campaigns
-      const { data: campaigns } = await supabase
-        .from("email_campaigns")
-        .select("id, sent_count");
-
-      const totalSent = campaigns?.reduce((sum, c) => sum + c.sent_count, 0) || 0;
-
-      // Use dummy data for email analytics
-      const opened = 0;
-      const clicked = 0;
-      const bounced = 0;
-      const uniqueOpens = 0;
-      const ctr = 12.5; // Dummy CTR data
 
       // Fetch event attendance
       const { count: attendanceCount } = await supabase
@@ -122,12 +102,6 @@ const AdminHome = () => {
         totalUsers: usersCount || 0,
         totalEvents: eventsCount || 0,
         totalRegistrations: registrationsCount || 0,
-        emailsSent: totalSent,
-        emailsOpened: opened,
-        emailsClicked: clicked,
-        emailsBounced: bounced,
-        ctr: Number(ctr),
-        uniqueOpens,
         eventAttendance: attendanceCount || 0,
       });
 
@@ -214,44 +188,6 @@ const AdminHome = () => {
     },
   ];
 
-  const emailStats = [
-    {
-      title: "Emails Sent",
-      value: analytics.emailsSent.toLocaleString(),
-      icon: Mail,
-      color: "text-blue-500",
-    },
-    {
-      title: "Emails Opened",
-      value: analytics.emailsOpened.toLocaleString(),
-      icon: Eye,
-      color: "text-green-500",
-    },
-    {
-      title: "Unique Opens (Reached)",
-      value: analytics.uniqueOpens.toLocaleString(),
-      icon: Users,
-      color: "text-purple-500",
-    },
-    {
-      title: "CTR (Click Rate)",
-      value: `${analytics.ctr}%`,
-      icon: MousePointerClick,
-      color: "text-orange-500",
-    },
-    {
-      title: "Emails Clicked",
-      value: analytics.emailsClicked.toLocaleString(),
-      icon: MousePointerClick,
-      color: "text-cyan-500",
-    },
-    {
-      title: "Emails Bounced",
-      value: analytics.emailsBounced.toLocaleString(),
-      icon: AlertCircle,
-      color: "text-red-500",
-    },
-  ];
 
   if (loading) {
     return (
@@ -296,28 +232,6 @@ const AdminHome = () => {
           </div>
         </div>
 
-        {/* Email Campaign Stats */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4 text-foreground">Email Campaign Analytics</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {emailStats.map((stat, index) => {
-              const Icon = stat.icon;
-              return (
-                <Card key={index} className="glass-card hover-glow">
-                  <CardHeader className="flex flex-row items-center justify-between pb-2">
-                    <CardTitle className="text-sm font-medium text-muted-foreground">
-                      {stat.title}
-                    </CardTitle>
-                    <Icon className={`w-5 h-5 ${stat.color}`} />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-3xl font-bold gradient-text">{stat.value}</div>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
-        </div>
 
         {/* Charts Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
