@@ -282,13 +282,22 @@ const EventManager = () => {
         </form>
       )}
 
-      <div className="space-y-3">
+      <div className="space-y-4">
+        <div className="flex items-center gap-2 pb-2 border-b border-primary/20">
+          <Calendar className="w-5 h-5 text-primary" />
+          <h3 className="text-lg font-semibold gradient-text">Planned Events</h3>
+          <span className="text-sm text-muted-foreground ml-auto">
+            {events.length} {events.length === 1 ? 'event' : 'events'}
+          </span>
+        </div>
+        
         {loading ? (
-          <p className="text-center text-muted-foreground">Loading events...</p>
+          <p className="text-center text-muted-foreground py-8">Loading events...</p>
         ) : events.length === 0 ? (
-          <p className="text-center text-muted-foreground">No events yet. Create your first event!</p>
+          <p className="text-center text-muted-foreground py-8">No events yet. Create your first event!</p>
         ) : (
-          events.map((event) => (
+          <div className="space-y-3">
+            {events.map((event) => (
             <div key={event.id} className="flex items-center justify-between p-3 rounded-lg bg-primary/5 border border-primary/20">
               <div className="flex-1">
                 <h4 className="font-semibold text-foreground">{event.title}</h4>
@@ -318,7 +327,8 @@ const EventManager = () => {
                 </Button>
               </div>
             </div>
-          ))
+            ))}
+          </div>
         )}
       </div>
     </Card>
