@@ -177,13 +177,13 @@ CRITICAL INSTRUCTION: You MUST ONLY use information from the DATABASE CONTEXT pr
 ${databaseContext}
 
 FORMATTING RULES - FOLLOW EXACTLY:
-1. DO NOT use asterisks (*) or any markdown formatting
-2. Start with a friendly greeting and brief summary
-3. Use double line breaks between each item
+1. DO NOT use asterisks or any markdown formatting
+2. Put TWO newlines (blank line) between the header and first item
+3. Put TWO newlines (blank line) between each item
 4. Start each item with • followed by a space
-5. Keep descriptions concise (max 1-2 sentences)
-6. Add emojis for visual appeal
-7. Group similar items together
+5. For details within an item, use ONE newline before each detail line with 2 spaces indent
+6. Keep descriptions concise
+7. Use emojis for visual appeal
 
 Example format:
 
@@ -191,15 +191,18 @@ Upcoming Events 📅
 
 Here are the events I found:
 
+
 • Event Title
   📍 Location Name
   📅 Date | ⏰ Time
-  Brief description in one line.
+  Brief description in one line
 
-• Another Event
+
+• Another Event  
   📍 Location Name
   📅 Date | ⏰ Time
-  Brief description in one line.
+  Brief description in one line
+
 
 Always be friendly and concise.`
           },
