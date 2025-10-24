@@ -82,16 +82,34 @@ const AdminEvents = () => {
         .from('event_registrations')
         .select(`
           registered_at,
-          events!inner(title),
-          profiles!inner(email)
+          event_id,
+          user_id
         `)
         .order('registered_at', { ascending: false });
 
       if (error) throw error;
+
+      // Fetch events and profiles separately
+      const eventIds = [...new Set(data?.map(reg => reg.event_id) || [])];
+      const userIds = [...new Set(data?.map(reg => reg.user_id) || [])];
+
+      const { data: eventsData } = await supabase
+        .from('events')
+        .select('id, title')
+        .in('id', eventIds);
+
+      const { data: profilesData } = await supabase
+        .from('profiles')
+        .select('id, email')
+        .in('id', userIds);
+
+      // Create lookup maps
+      const eventsMap = new Map(eventsData?.map(e => [e.id, e.title]) || []);
+      const profilesMap = new Map(profilesData?.map(p => [p.id, p.email]) || []);
       
       const formattedData: EventRegistration[] = (data || []).map((reg: any) => ({
-        event_name: reg.events.title,
-        user_email: reg.profiles.email,
+        event_name: eventsMap.get(reg.event_id) || 'Unknown Event',
+        user_email: profilesMap.get(reg.user_id) || 'Unknown User',
         registered_at: new Date(reg.registered_at).toLocaleDateString('en-US', {
           year: 'numeric',
           month: 'short',
