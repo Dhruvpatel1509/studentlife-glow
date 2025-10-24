@@ -17,6 +17,9 @@ const AdminAuth = () => {
     e.preventDefault();
     // TODO: Implement authentication with Supabase
     console.log("Auth submission:", { email, password, isSignUp });
+    
+    // Redirect to admin home page
+    navigate("/admin/home");
   };
 
   return (

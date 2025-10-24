@@ -17,6 +17,9 @@ const StudentAuth = () => {
     e.preventDefault();
     // TODO: Implement authentication with Supabase
     console.log("Auth submission:", { email, password, isSignUp });
+    
+    // Redirect to student home page
+    navigate("/");
   };
 
   return (
