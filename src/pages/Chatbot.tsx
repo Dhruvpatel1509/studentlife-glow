@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Bot, Send, User, Sparkles } from "lucide-react";
+import { Bot, Send, User, Sparkles, Loader2 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import ChatbotNavbar from "@/components/ChatbotNavbar";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 interface Message {
   id: number;
@@ -17,15 +19,28 @@ const Chatbot = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,
-      text: "Hi! I'm Pixie, your campus assistant! How can I help you today? 🌟",
+      text: "Hi! I'm Pixie, your AI campus assistant! 🌟 I can help you with:\n\n• Events and workshops\n• Timetable and schedules\n• Exam dates\n• Mensa menu\n• Campus news\n• Transportation\n\nWhat would you like to know?",
       sender: "bot",
       timestamp: new Date()
     }
   ]);
   const [inputText, setInputText] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
 
-  const handleSend = () => {
-    if (!inputText.trim()) return;
+  // Auto-scroll to bottom when new messages arrive
+  useEffect(() => {
+    if (scrollAreaRef.current) {
+      const scrollContainer = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]');
+      if (scrollContainer) {
+        scrollContainer.scrollTop = scrollContainer.scrollHeight;
+      }
+    }
+  }, [messages]);
+
+  const handleSend = async () => {
+    if (!inputText.trim() || isLoading) return;
 
     const userMessage: Message = {
       id: messages.length + 1,
@@ -34,19 +49,51 @@ const Chatbot = () => {
       timestamp: new Date()
     };
 
-    setMessages([...messages, userMessage]);
+    setMessages(prev => [...prev, userMessage]);
     setInputText("");
+    setIsLoading(true);
 
-    // Simulate bot response
-    setTimeout(() => {
+    try {
+      // Call the Supabase edge function
+      const { data, error } = await supabase.functions.invoke('chat-assistant', {
+        body: {
+          messages: [...messages, userMessage].map(m => ({
+            role: m.sender === 'user' ? 'user' : 'assistant',
+            content: m.text
+          }))
+        }
+      });
+
+      if (error) throw error;
+
       const botMessage: Message = {
         id: messages.length + 2,
-        text: "I'm currently a prototype! Soon I'll be able to help you with events, schedules, and campus information. 🎓",
+        text: data.message || "Sorry, I couldn't process that request.",
         sender: "bot",
         timestamp: new Date()
       };
+
       setMessages(prev => [...prev, botMessage]);
-    }, 1000);
+    } catch (error) {
+      console.error('Error calling chatbot:', error);
+      
+      const errorMessage: Message = {
+        id: messages.length + 2,
+        text: "Sorry, I encountered an error. Please try again! 😅",
+        sender: "bot",
+        timestamp: new Date()
+      };
+      
+      setMessages(prev => [...prev, errorMessage]);
+      
+      toast({
+        title: "Error",
+        description: "Failed to get response from chatbot",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -71,7 +118,7 @@ const Chatbot = () => {
         </div>
 
         {/* Messages */}
-        <ScrollArea className="flex-1 p-6">
+        <ScrollArea ref={scrollAreaRef} className="flex-1 p-6">
           <div className="space-y-4">
             {messages.map((message) => (
               <div
@@ -101,7 +148,7 @@ const Chatbot = () => {
                       : "bg-primary text-primary-foreground"
                   }`}
                 >
-                  <p className="text-sm">{message.text}</p>
+                  <p className="text-sm whitespace-pre-wrap">{message.text}</p>
                   <p className="text-xs opacity-70 mt-1">
                     {message.timestamp.toLocaleTimeString([], {
                       hour: "2-digit",
@@ -110,9 +157,22 @@ const Chatbot = () => {
                   </p>
                 </div>
               </div>
-            ))}
-          </div>
-        </ScrollArea>
+              ))}
+            {isLoading && (
+              <div className="flex items-start gap-3 animate-fade-in">
+                <div className="p-2 rounded-full bg-gradient-to-br from-pink-600 to-purple-600">
+                  <Bot className="w-5 h-5 text-white" />
+                </div>
+                <div className="max-w-[70%] p-4 rounded-2xl bg-card text-foreground">
+                  <div className="flex items-center gap-2">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span className="text-sm">Pixie is thinking...</span>
+                  </div>
+                </div>
+              </div>
+            )}
+            </div>
+          </ScrollArea>
 
         {/* Input */}
         <div className="p-6 border-t border-primary/20">
@@ -126,13 +186,18 @@ const Chatbot = () => {
             />
             <Button
               onClick={handleSend}
-              className="bg-primary hover:bg-primary/80 text-primary-foreground"
+              disabled={isLoading || !inputText.trim()}
+              className="bg-primary hover:bg-primary/80 text-primary-foreground disabled:opacity-50"
             >
-              <Send className="w-5 h-5" />
+              {isLoading ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
+                <Send className="w-5 h-5" />
+              )}
             </Button>
           </div>
           <p className="text-xs text-muted-foreground mt-2 text-center">
-            Pixie is currently in prototype mode
+            Powered by AI • Connected to live campus data
           </p>
         </div>
       </Card>
