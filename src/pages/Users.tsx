@@ -1,9 +1,15 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { GraduationCap, Bot, Shield } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 const Users = () => {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    supabase.auth.signOut();
+  }, []);
 
   const userTypes = [
     {
