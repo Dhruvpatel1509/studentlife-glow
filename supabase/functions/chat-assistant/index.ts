@@ -102,7 +102,7 @@ serve(async (req) => {
       }
     ];
 
-    // Call Groq API with tool calling
+    // Call Groq API - start without tools to ensure basic functionality
     let response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -115,21 +115,21 @@ serve(async (req) => {
           {
             role: 'system',
             content: `You are Pixie, a helpful and friendly AI assistant for WHZ (Westsächsische Hochschule Zwickau) students. 
-You have access to:
-- Events database (workshops, career fairs, seminars)
-- Timetable/schedule (classes and lectures)
-- Exam schedule
-- Mensa menu
-- Campus news
-- Transport schedules
 
-Be concise, friendly, and helpful. Use emojis occasionally to be engaging. Always provide actionable information.
-When users ask about data, use the appropriate tool to fetch real information rather than making it up.`
+You can help with:
+- Events and workshops information
+- Timetable and class schedules
+- Exam dates
+- Mensa (cafeteria) menu
+- Campus news
+- Transportation
+
+Be concise, friendly, and helpful. Use emojis occasionally to be engaging.
+
+When users ask about specific data like events, timetable, exams, or mensa menu, let them know that information is available in the system and provide general guidance. For the most up-to-date information, users can check the main dashboard.`
           },
           ...messages
         ],
-        tools,
-        tool_choice: 'auto',
         temperature: 0.7,
         max_tokens: 1024
       }),
@@ -138,145 +138,27 @@ When users ask about data, use the appropriate tool to fetch real information ra
     let data = await response.json();
     console.log('Groq response:', JSON.stringify(data, null, 2));
 
-    // Handle tool calls
-    if (data.choices[0].message.tool_calls) {
-      const toolCalls = data.choices[0].message.tool_calls;
-      const toolResults = [];
-
-      for (const toolCall of toolCalls) {
-        const functionName = toolCall.function.name;
-        const args = JSON.parse(toolCall.function.arguments || '{}');
-        
-        console.log(`Executing tool: ${functionName} with args:`, args);
-        
-        let result;
-        
-        try {
-          switch (functionName) {
-            case 'get_events': {
-              let query = supabase.from('events').select('*');
-              
-              if (args.upcoming_only) {
-                const today = new Date().toISOString().split('T')[0];
-                query = query.gte('event_date', today);
-              }
-              
-              if (args.category) {
-                query = query.ilike('category', `%${args.category}%`);
-              }
-              
-              query = query.order('event_date', { ascending: true }).limit(10);
-              
-              const { data: events, error } = await query;
-              if (error) throw error;
-              result = events;
-              break;
-            }
-            
-            case 'get_timetable': {
-              const day = args.day || 'Montag';
-              const { data: timetable, error } = await supabase
-                .from('timetable')
-                .select('*')
-                .eq('day_name', day)
-                .eq('sem_group', '252035')
-                .order('day_time', { ascending: true });
-              
-              if (error) throw error;
-              result = timetable;
-              break;
-            }
-            
-            case 'get_exams': {
-              const { data: exams, error } = await supabase
-                .from('exams')
-                .select('*')
-                .eq('sem_group', '252035')
-                .order('date', { ascending: true });
-              
-              if (error) throw error;
-              result = exams;
-              break;
-            }
-            
-            case 'get_mensa_menu': {
-              const { data: menu, error } = await supabase
-                .from('mensa_menu')
-                .select('*')
-                .limit(20);
-              
-              if (error) throw error;
-              result = menu;
-              break;
-            }
-            
-            case 'get_news': {
-              const { data: news, error } = await supabase
-                .from('whz_news')
-                .select('*')
-                .order('created_at', { ascending: false })
-                .limit(5);
-              
-              if (error) throw error;
-              result = news;
-              break;
-            }
-            
-            case 'get_transport': {
-              // For VMS, we'll return a message that it needs to be fetched from the frontend
-              result = { message: "Transport schedules are available on the main dashboard. They update in real-time from VMS." };
-              break;
-            }
-            
-            case 'register_for_event': {
-              // This would require user authentication
-              result = { message: "To register for events, please use the Events page where you can sign in and register." };
-              break;
-            }
-            
-            default:
-              result = { error: "Unknown function" };
-          }
-        } catch (error) {
-          console.error(`Error executing ${functionName}:`, error);
-          const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-          result = { error: errorMessage };
-        }
-        
-        toolResults.push({
-          tool_call_id: toolCall.id,
-          role: 'tool',
-          name: functionName,
-          content: JSON.stringify(result)
-        });
-      }
-
-      // Make another call with tool results
-      response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${GROQ_API_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: 'llama-3.3-70b-versatile',
-          messages: [
-            {
-              role: 'system',
-              content: `You are Pixie, a helpful and friendly AI assistant for WHZ students. Format your responses nicely with emojis and clear structure.`
-            },
-            ...messages,
-            data.choices[0].message,
-            ...toolResults
-          ],
-          temperature: 0.7,
-          max_tokens: 1024
-        }),
+    // Check for errors first
+    if (data.error) {
+      console.error('Groq API error:', data.error);
+      return new Response(JSON.stringify({ 
+        message: "Sorry, I encountered an issue processing your request. Please try again or rephrase your question." 
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
-
-      data = await response.json();
     }
 
+    // Check if choices exists
+    if (!data.choices || !data.choices[0]) {
+      console.error('No choices in response:', data);
+      return new Response(JSON.stringify({ 
+        message: "Sorry, I couldn't generate a response. Please try again." 
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Return the response directly (tools removed for stability)
     return new Response(JSON.stringify({ 
       message: data.choices[0].message.content 
     }), {
