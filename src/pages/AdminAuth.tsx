@@ -19,7 +19,8 @@ const AdminAuth = () => {
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
-        if (session?.user) {
+        // Only redirect on sign in, not sign up
+        if (event === 'SIGNED_IN' && session?.user) {
           navigate("/admin/home");
         }
       }
