@@ -29,8 +29,8 @@ interface Event {
 
 interface EventRegistration {
   event_name: string;
-  user_email: string;
-  registered_at: string;
+  user_emails: string[];
+  registration_count: number;
 }
 
 const AdminEvents = () => {
@@ -107,16 +107,23 @@ const AdminEvents = () => {
       const eventsMap = new Map(eventsData?.map(e => [e.id, e.title]) || []);
       const profilesMap = new Map(profilesData?.map(p => [p.id, p.email]) || []);
       
-      const formattedData: EventRegistration[] = (data || []).map((reg: any) => ({
-        event_name: eventsMap.get(reg.event_id) || 'Unknown Event',
-        user_email: profilesMap.get(reg.user_id) || 'Unknown User',
-        registered_at: new Date(reg.registered_at).toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'short',
-          day: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit'
-        })
+      // Group registrations by event
+      const groupedByEvent = new Map<string, string[]>();
+      
+      (data || []).forEach((reg: any) => {
+        const eventName = eventsMap.get(reg.event_id) || 'Unknown Event';
+        const userEmail = profilesMap.get(reg.user_id) || 'Unknown User';
+        
+        if (!groupedByEvent.has(eventName)) {
+          groupedByEvent.set(eventName, []);
+        }
+        groupedByEvent.get(eventName)?.push(userEmail);
+      });
+      
+      const formattedData: EventRegistration[] = Array.from(groupedByEvent.entries()).map(([eventName, emails]) => ({
+        event_name: eventName,
+        user_emails: emails,
+        registration_count: emails.length
       }));
       
       setRegistrations(formattedData);
@@ -427,16 +434,22 @@ const AdminEvents = () => {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Event Name</TableHead>
-                    <TableHead>User Email</TableHead>
-                    <TableHead>Registered At</TableHead>
+                    <TableHead>Registered Users</TableHead>
+                    <TableHead>Total Registrations</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {registrations.map((reg, index) => (
                     <TableRow key={index}>
                       <TableCell className="font-medium">{reg.event_name}</TableCell>
-                      <TableCell>{reg.user_email}</TableCell>
-                      <TableCell className="text-muted-foreground">{reg.registered_at}</TableCell>
+                      <TableCell>
+                        <div className="flex flex-col gap-1">
+                          {reg.user_emails.map((email, emailIndex) => (
+                            <span key={emailIndex} className="text-sm">{email}</span>
+                          ))}
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-muted-foreground">{reg.registration_count}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
