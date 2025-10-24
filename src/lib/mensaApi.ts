@@ -53,7 +53,6 @@ const fetchWithFallback = async (url: string): Promise<string> => {
   } catch (e) {
     const proxies = [
       (u: string) => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
-      (u: string) => `https://r.jina.ai/http/${u.replace(/^https?:\/\//, "")}`,
     ];
     for (const p of proxies) {
       try {
@@ -70,45 +69,40 @@ const parseMensaHTML = (html: string): MensaMeal[] => {
   const doc = parser.parseFromString(html, "text/html");
   const meals: MensaMeal[] = [];
   
-  // Extract all image URLs first
-  const imageMatches = html.match(/pics\/essen_id\d+\.png/g) || [];
-  const imageUrls = imageMatches.map(img => `https://mobile.whz.de/mensa/${img}`);
+  // Find all meal divs with class "thumbnail"
+  const thumbnails = doc.querySelectorAll('.thumbnail');
   
-  // Find all meal sections - they are typically separated by headers
-  const allText = doc.body.textContent || "";
-  const sections = allText.split(/(?=[A-Z][a-z]+ Zwickau)/);
-  
-  let imageIndex = 0;
-  
-  sections.forEach((section) => {
-    const lines = section.split('\n').map(l => l.trim()).filter(Boolean);
+  thumbnails.forEach((thumbnail) => {
+    // Extract title (in bold div)
+    const titleDiv = thumbnail.querySelector('div[style*="font-weight:bold"]');
+    const title = titleDiv?.textContent?.trim().replace(" Zwickau", "") || "";
     
-    if (lines.length < 2) return;
+    // Extract description (in the 120px height div)
+    const descDiv = thumbnail.querySelector('div[style*="height:120px"]');
+    const description = descDiv?.textContent?.trim() || "";
     
-    const title = lines[0];
-    if (!title.includes("Zwickau")) return;
-    
-    const description = lines[1];
-    
-    // Find price line (contains €)
-    const priceLine = lines.find(l => l.includes("€")) || "";
-    const priceMatches = priceLine.match(/(\d+,\d+)\s*€/g) || [];
+    // Extract prices
+    const priceDiv = thumbnail.querySelector('div[style*="text-align:center"]');
+    const priceText = priceDiv?.textContent || "";
+    const priceMatches = priceText.match(/(\d+,\d+)\s*€/g) || [];
     
     const priceSmall = priceMatches[0] || "N/A";
     const priceMedium = priceMatches[1] || "N/A";
     const priceLarge = priceMatches[2] || "N/A";
     
-    // Check for vegetarian icon
-    const isVegetarian = section.toLowerCase().includes("veggie") || 
-                        section.toLowerCase().includes("vegetar");
+    // Extract image URL
+    const img = thumbnail.querySelector('img[src*="pics/essen_id"]');
+    const imgSrc = img?.getAttribute('src') || "";
+    const imageUrl = imgSrc ? `https://mobile.whz.de/mensa/${imgSrc}` : "";
     
-    // Use the next available image URL
-    const imageUrl = imageUrls[imageIndex] || "";
-    imageIndex++;
+    // Check for vegetarian
+    const allText = thumbnail.textContent?.toLowerCase() || "";
+    const isVegetarian = allText.includes('veg') || 
+                        thumbnail.querySelector('img[alt*="Veggie"]') !== null;
     
     if (title && description) {
       meals.push({
-        title: title.replace(" Zwickau", ""),
+        title,
         description,
         priceSmall,
         priceMedium,
