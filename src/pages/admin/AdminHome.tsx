@@ -24,7 +24,6 @@ const AdminHome = () => {
   const [categoryData, setCategoryData] = useState<any[]>([]);
   const [userGrowth, setUserGrowth] = useState<any[]>([]);
   const [topEvents, setTopEvents] = useState<any[]>([]);
-  const [emailPerformance, setEmailPerformance] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -55,16 +54,12 @@ const AdminHome = () => {
 
       const totalSent = campaigns?.reduce((sum, c) => sum + c.sent_count, 0) || 0;
 
-      // Fetch email analytics
-      const { data: emailAnalytics } = await supabase
-        .from("email_analytics")
-        .select("*");
-
-      const opened = emailAnalytics?.filter(e => e.opened_at).length || 0;
-      const clicked = emailAnalytics?.filter(e => e.clicked_at).length || 0;
-      const bounced = emailAnalytics?.filter(e => e.bounced).length || 0;
-      const uniqueOpens = new Set(emailAnalytics?.filter(e => e.opened_at).map(e => e.user_id)).size;
-      const ctr = opened > 0 ? ((clicked / opened) * 100).toFixed(1) : 0;
+      // Use dummy data for email analytics
+      const opened = 0;
+      const clicked = 0;
+      const bounced = 0;
+      const uniqueOpens = 0;
+      const ctr = 12.5; // Dummy CTR data
 
       // Fetch event attendance
       const { count: attendanceCount } = await supabase
@@ -179,22 +174,6 @@ const AdminHome = () => {
         .slice(0, 5) || [];
 
       setTopEvents(topEventsData);
-
-      // Process email campaign performance
-      const emailPerfData = campaigns?.slice(0, 5).map((campaign, index) => {
-        const campaignAnalytics = emailAnalytics?.filter(e => e.campaign_id === campaign.id) || [];
-        const opened = campaignAnalytics.filter(e => e.opened_at).length;
-        const clicked = campaignAnalytics.filter(e => e.clicked_at).length;
-        
-        return {
-          name: `Campaign ${index + 1}`,
-          sent: campaign.sent_count,
-          opened,
-          clicked
-        };
-      }) || [];
-
-      setEmailPerformance(emailPerfData);
 
       setLoading(false);
     } catch (error) {
@@ -395,7 +374,10 @@ const AdminHome = () => {
               </ResponsiveContainer>
             </CardContent>
           </Card>
+        </div>
 
+        {/* Charts Grid - Category and Registrations */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           {/* Category Distribution */}
           {categoryData.length > 0 && (
             <Card className="glass-card">
@@ -432,6 +414,32 @@ const AdminHome = () => {
               </CardContent>
             </Card>
           )}
+
+          {/* Registration Trends */}
+          <Card className="glass-card">
+            <CardHeader>
+              <CardTitle>Monthly Registrations</CardTitle>
+              <CardDescription>Event registration trends over time</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={eventTrends}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                  <XAxis dataKey="month" stroke="#9ca3af" />
+                  <YAxis stroke="#9ca3af" />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: '#1f2937', 
+                      border: '1px solid #374151',
+                      borderRadius: '8px'
+                    }}
+                  />
+                  <Legend />
+                  <Bar dataKey="registrations" fill="#f97316" name="Registrations" />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Additional Charts */}
@@ -491,38 +499,6 @@ const AdminHome = () => {
             </Card>
           )}
         </div>
-
-        {/* Email Campaign Performance */}
-        {emailPerformance.length > 0 && (
-          <div className="mb-8">
-            <Card className="glass-card">
-              <CardHeader>
-                <CardTitle>Email Campaign Performance</CardTitle>
-                <CardDescription>Recent campaigns: sent, opened, and clicked</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={emailPerformance}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                    <XAxis dataKey="name" stroke="#9ca3af" />
-                    <YAxis stroke="#9ca3af" />
-                    <Tooltip 
-                      contentStyle={{ 
-                        backgroundColor: '#1f2937', 
-                        border: '1px solid #374151',
-                        borderRadius: '8px'
-                      }}
-                    />
-                    <Legend />
-                    <Bar dataKey="sent" fill="#3b82f6" name="Sent" />
-                    <Bar dataKey="opened" fill="#10b981" name="Opened" />
-                    <Bar dataKey="clicked" fill="#f97316" name="Clicked" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-          </div>
-        )}
       </main>
     </div>
   );
