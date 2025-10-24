@@ -64,6 +64,42 @@ export type Database = {
           },
         ]
       }
+      exams: {
+        Row: {
+          course: string
+          created_at: string | null
+          date: string
+          id: string
+          lecturer: string | null
+          period: string | null
+          sem_group: string
+          space: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          course: string
+          created_at?: string | null
+          date: string
+          id?: string
+          lecturer?: string | null
+          period?: string | null
+          sem_group?: string
+          space?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          course?: string
+          created_at?: string | null
+          date?: string
+          id?: string
+          lecturer?: string | null
+          period?: string | null
+          sem_group?: string
+          space?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string | null
