@@ -11,6 +11,8 @@ import Chatbot from "./pages/Chatbot";
 import KommPakt from "./pages/KommPakt";
 import AdminHome from "./pages/admin/AdminHome";
 import Analytics from "./pages/admin/Analytics";
+import StudentAuth from "./pages/StudentAuth";
+import AdminAuth from "./pages/AdminAuth";
 
 const queryClient = new QueryClient();
 
@@ -23,6 +25,8 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/users" element={<Users />} />
+          <Route path="/student-auth" element={<StudentAuth />} />
+          <Route path="/admin-auth" element={<AdminAuth />} />
           <Route path="/events" element={<Events />} />
           <Route path="/chatbot" element={<Chatbot />} />
           <Route path="/kommpakt" element={<KommPakt />} />

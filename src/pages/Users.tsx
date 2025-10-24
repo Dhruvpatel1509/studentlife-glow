@@ -11,7 +11,7 @@ const Users = () => {
       title: "Zwickly Student",
       description: "Access your campus dashboard",
       icon: GraduationCap,
-      action: () => navigate("/"),
+      action: () => navigate("/student-auth"),
       gradient: "from-blue-600 to-purple-600"
     },
     {
@@ -27,7 +27,7 @@ const Users = () => {
       title: "KommPakt",
       description: "Admin portal access",
       icon: Shield,
-      action: () => navigate("/kommpakt"),
+      action: () => navigate("/admin-auth"),
       gradient: "from-orange-600 to-red-600"
     }
   ];
