@@ -37,16 +37,25 @@ const TimetableCard = () => {
 
   const isToday = selectedDay === getTodayDayInGerman();
 
+  const getDayAbbreviation = (day: string): string => {
+    const abbreviations: { [key: string]: string } = {
+      Montag: "Mo",
+      Dienstag: "Di",
+      Mittwoch: "Mi",
+      Donnerstag: "Do",
+      Freitag: "Fr"
+    };
+    return abbreviations[day] || day.substring(0, 2);
+  };
+
   return (
     <Card className="glass-card hover-glow p-6 animate-fade-in">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <Calendar className="w-5 h-5 text-primary" />
-          <h3 className="text-lg font-semibold gradient-text">
-            {isToday ? "Today's" : selectedDay} Timetable
-          </h3>
+          <h3 className="text-lg font-semibold gradient-text">Timetable</h3>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <Button
             variant="ghost"
             size="icon"
@@ -55,6 +64,9 @@ const TimetableCard = () => {
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
+          <span className="text-sm font-semibold text-primary min-w-[2rem] text-center">
+            {getDayAbbreviation(selectedDay)}
+          </span>
           <Button
             variant="ghost"
             size="icon"
@@ -64,26 +76,6 @@ const TimetableCard = () => {
             <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
-      </div>
-      
-      {/* Day indicator */}
-      <div className="flex gap-1 mb-4 overflow-x-auto">
-        {WEEKDAYS.map((day, index) => (
-          <button
-            key={day}
-            onClick={() => {
-              setCurrentDayIndex(index);
-              setSelectedDay(day);
-            }}
-            className={`px-3 py-1 rounded-full text-xs font-medium transition-all whitespace-nowrap ${
-              selectedDay === day
-                ? "bg-primary text-primary-foreground"
-                : "bg-muted/30 text-muted-foreground hover:bg-muted/50"
-            }`}
-          >
-            {day.substring(0, 2)}
-          </button>
-        ))}
       </div>
       
       {loading ? (
