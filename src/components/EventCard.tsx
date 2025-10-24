@@ -336,64 +336,64 @@ const EventCard = ({
       </Dialog>
 
       <Dialog open={showDetails} onOpenChange={setShowDetails}>
-        <DialogContent className="glass-card border-primary/30 max-w-2xl max-h-[80vh] overflow-y-auto">
+        <DialogContent className="bg-background border-primary/30 max-w-2xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="gradient-text text-2xl">{title}</DialogTitle>
+            <DialogTitle className="text-2xl text-foreground">{title}</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4">
-            <div className="relative h-64 rounded-lg overflow-hidden">
+          <div className="space-y-6">
+            <div className="relative h-64 rounded-lg overflow-hidden border border-border">
               <img src={image} alt={title} className="w-full h-full object-cover" />
             </div>
             
             {description && (
-              <div>
-                <h3 className="font-semibold text-lg mb-2 flex items-center gap-2">
+              <div className="space-y-2">
+                <h3 className="font-semibold text-lg flex items-center gap-2 text-foreground">
                   <FileText className="w-5 h-5 text-primary" />
                   Description
                 </h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">{description}</p>
+                <p className="text-foreground text-base leading-relaxed">{description}</p>
               </div>
             )}
             
             <div className="grid grid-cols-2 gap-4">
               {eventDate && (
-                <div>
-                  <h3 className="font-semibold mb-1 flex items-center gap-2">
+                <div className="space-y-1">
+                  <h3 className="font-semibold flex items-center gap-2 text-foreground">
                     <Clock className="w-4 h-4 text-primary" />
                     Date
                   </h3>
-                  <p className="text-muted-foreground text-sm">{eventDate}</p>
+                  <p className="text-foreground">{eventDate}</p>
                 </div>
               )}
               
-              <div>
-                <h3 className="font-semibold mb-1 flex items-center gap-2">
+              <div className="space-y-1">
+                <h3 className="font-semibold flex items-center gap-2 text-foreground">
                   <Clock className="w-4 h-4 text-primary" />
                   Time
                 </h3>
-                <p className="text-muted-foreground text-sm">{time}</p>
+                <p className="text-foreground">{time}</p>
               </div>
             </div>
             
-            <div>
-              <h3 className="font-semibold mb-1 flex items-center gap-2">
+            <div className="space-y-1">
+              <h3 className="font-semibold flex items-center gap-2 text-foreground">
                 <MapPin className="w-4 h-4 text-primary" />
                 Location
               </h3>
-              <p className="text-muted-foreground text-sm">{location}</p>
+              <p className="text-foreground">{location}</p>
             </div>
             
             {language && (
-              <div>
-                <h3 className="font-semibold mb-1">Language</h3>
-                <p className="text-muted-foreground text-sm">{language}</p>
+              <div className="space-y-1">
+                <h3 className="font-semibold text-foreground">Language</h3>
+                <p className="text-foreground">{language}</p>
               </div>
             )}
             
             {registrationInfo && (
               <div className="bg-primary/10 border border-primary/30 rounded-lg p-4">
-                <h3 className="font-semibold mb-2 text-primary">Registration Information</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{registrationInfo}</p>
+                <h3 className="font-semibold mb-2 text-foreground">Registration Information</h3>
+                <p className="text-foreground leading-relaxed">{registrationInfo}</p>
               </div>
             )}
             
