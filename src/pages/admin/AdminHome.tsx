@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 import AdminNavbar from "@/components/AdminNavbar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
-import { TrendingUp, Users, Calendar, CheckCircle } from "lucide-react";
+import { TrendingUp, Users, Calendar, CheckCircle, Check, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 const AdminHome = () => {
   const { toast } = useToast();
@@ -19,10 +21,99 @@ const AdminHome = () => {
   const [userGrowth, setUserGrowth] = useState<any[]>([]);
   const [topEvents, setTopEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [pendingProposals, setPendingProposals] = useState<any[]>([]);
 
   useEffect(() => {
     fetchAnalytics();
+    fetchPendingProposals();
   }, []);
+
+  const fetchPendingProposals = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("event_proposals")
+        .select("*, profiles(email)")
+        .eq("status", "pending")
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      setPendingProposals(data || []);
+    } catch (error) {
+      console.error("Error fetching pending proposals:", error);
+    }
+  };
+
+  const handleApprove = async (proposal: any) => {
+    try {
+      // Insert into events table
+      const { error: eventError } = await supabase
+        .from("events")
+        .insert({
+          title: proposal.title,
+          description: proposal.description,
+          event_date: proposal.event_date,
+          event_time: proposal.event_time,
+          location: proposal.location,
+          category: proposal.category,
+          image_url: proposal.image_url || '/placeholder.svg',
+          registration_info: proposal.registration_info,
+          language: proposal.language,
+          created_by: proposal.user_id,
+          likes: 0,
+          prosts: 0
+        });
+
+      if (eventError) throw eventError;
+
+      // Update proposal status
+      const { error: updateError } = await supabase
+        .from("event_proposals")
+        .update({ status: 'approved' })
+        .eq("id", proposal.id);
+
+      if (updateError) throw updateError;
+
+      toast({
+        title: "Success",
+        description: "Event proposal approved and added to events!",
+      });
+
+      fetchPendingProposals();
+      fetchAnalytics();
+    } catch (error) {
+      console.error("Error approving proposal:", error);
+      toast({
+        title: "Error",
+        description: "Failed to approve proposal",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDecline = async (proposalId: string) => {
+    try {
+      const { error } = await supabase
+        .from("event_proposals")
+        .update({ status: 'declined' })
+        .eq("id", proposalId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Event proposal declined",
+      });
+
+      fetchPendingProposals();
+    } catch (error) {
+      console.error("Error declining proposal:", error);
+      toast({
+        title: "Error",
+        description: "Failed to decline proposal",
+        variant: "destructive",
+      });
+    }
+  };
 
   const fetchAnalytics = async () => {
     try {
@@ -413,6 +504,74 @@ const AdminHome = () => {
             </Card>
           )}
         </div>
+
+        {/* Pending Event Proposals Section */}
+        {pendingProposals.length > 0 && (
+          <div className="mb-8">
+            <h2 className="text-2xl font-semibold mb-4 text-foreground flex items-center gap-2">
+              Pending Event Proposals
+              <Badge variant="secondary">{pendingProposals.length}</Badge>
+            </h2>
+            <div className="grid grid-cols-1 gap-4">
+              {pendingProposals.map((proposal) => (
+                <Card key={proposal.id} className="glass-card">
+                  <CardHeader>
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <CardTitle className="text-xl mb-2">{proposal.title}</CardTitle>
+                        <CardDescription className="text-sm">
+                          Submitted by: {proposal.profiles?.email || 'Unknown User'}
+                        </CardDescription>
+                        <CardDescription className="text-xs mt-1">
+                          {new Date(proposal.created_at).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
+                        </CardDescription>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          className="bg-green-600 hover:bg-green-700"
+                          onClick={() => handleApprove(proposal)}
+                        >
+                          <Check className="w-4 h-4 mr-1" />
+                          Approve
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => handleDecline(proposal.id)}
+                        >
+                          <X className="w-4 h-4 mr-1" />
+                          Decline
+                        </Button>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2 text-sm">
+                      <p><strong>Description:</strong> {proposal.description}</p>
+                      <div className="grid grid-cols-2 gap-2">
+                        <p><strong>Category:</strong> {proposal.category}</p>
+                        <p><strong>Location:</strong> {proposal.location}</p>
+                        <p><strong>Date:</strong> {new Date(proposal.event_date).toLocaleDateString()}</p>
+                        <p><strong>Time:</strong> {proposal.event_time}</p>
+                        {proposal.language && <p><strong>Language:</strong> {proposal.language}</p>}
+                      </div>
+                      {proposal.registration_info && (
+                        <p><strong>Registration Info:</strong> {proposal.registration_info}</p>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );

@@ -46,6 +46,57 @@ export type Database = {
           },
         ]
       }
+      event_proposals: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          event_date: string
+          event_time: string
+          id: string
+          image_url: string | null
+          language: string | null
+          location: string
+          registration_info: string | null
+          status: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description?: string | null
+          event_date: string
+          event_time: string
+          id?: string
+          image_url?: string | null
+          language?: string | null
+          location: string
+          registration_info?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          event_date?: string
+          event_time?: string
+          id?: string
+          image_url?: string | null
+          language?: string | null
+          location?: string
+          registration_info?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       event_registrations: {
         Row: {
           event_id: string
