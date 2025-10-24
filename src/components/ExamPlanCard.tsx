@@ -1,4 +1,4 @@
-import { GraduationCap, Clock, MapPin, Calendar, ExternalLink } from "lucide-react";
+import { GraduationCap, Clock, MapPin, Calendar, ExternalLink, BookOpen, User } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
@@ -25,10 +25,10 @@ const ExamPlanCard = () => {
 
   return (
     <Card className="glass-card hover-glow p-6 animate-fade-in">
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
           <GraduationCap className="w-5 h-5 text-primary" />
-          <h3 className="text-lg font-semibold gradient-text">Exam Schedule</h3>
+          <h3 className="text-lg font-semibold gradient-text">Next 3 Exams</h3>
         </div>
         <Button 
           variant="ghost" 
@@ -40,6 +40,7 @@ const ExamPlanCard = () => {
           Portal
         </Button>
       </div>
+      <p className="text-xs text-muted-foreground mb-4">Seminar Group 252035</p>
       
       {loading ? (
         <div className="text-center text-muted-foreground py-8">Loading exams...</div>
@@ -56,32 +57,46 @@ const ExamPlanCard = () => {
           </Button>
         </div>
       ) : (
-        <div className="space-y-3">
-          {exams.slice(0, 5).map((exam, index) => (
+        <div className="space-y-4">
+          {exams.slice(0, 3).map((exam, index) => (
             <div
               key={index}
-              className="p-3 rounded-lg bg-muted/20 border border-primary/10 hover:border-primary/30 transition-all duration-300"
+              className="p-4 rounded-lg bg-muted/20 border border-primary/10 hover:border-primary/30 transition-all duration-300"
             >
-              {exam.date && (
-                <div className="flex items-center gap-2 text-sm text-primary mb-1">
-                  <Calendar className="w-4 h-4" />
-                  <span className="font-medium">{exam.date}</span>
-                  {exam.time && <span className="text-muted-foreground">• {exam.time}</span>}
-                </div>
-              )}
-              <p className="font-semibold text-foreground mb-1">{exam.course}</p>
-              {exam.type && (
-                <p className="text-sm text-primary mb-1">📝 {exam.type}</p>
-              )}
-              {exam.examiner && (
-                <p className="text-sm text-muted-foreground mb-1">👨‍🏫 {exam.examiner}</p>
-              )}
-              {exam.room && (
-                <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                  <MapPin className="w-3 h-3" />
-                  <span>{exam.room}</span>
-                </div>
-              )}
+              <div className="flex items-start gap-2 mb-3">
+                <BookOpen className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                <p className="font-semibold text-foreground leading-tight">{exam.course}</p>
+              </div>
+              
+              <div className="space-y-2 text-sm">
+                {exam.space && (
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <MapPin className="w-4 h-4 text-primary flex-shrink-0" />
+                    <span>Space: {exam.space}</span>
+                  </div>
+                )}
+                
+                {exam.lecturer && (
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <User className="w-4 h-4 text-primary flex-shrink-0" />
+                    <span>Lecturer: {exam.lecturer}</span>
+                  </div>
+                )}
+                
+                {exam.date && (
+                  <div className="flex items-center gap-2 text-primary font-medium">
+                    <Calendar className="w-4 h-4 flex-shrink-0" />
+                    <span>Date: {exam.date}</span>
+                  </div>
+                )}
+                
+                {exam.period && (
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Clock className="w-4 h-4 text-primary flex-shrink-0" />
+                    <span>Period: {exam.period}</span>
+                  </div>
+                )}
+              </div>
             </div>
           ))}
         </div>

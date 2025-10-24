@@ -1,10 +1,9 @@
 export interface ExamEntry {
-  date: string;
-  time: string;
   course: string;
-  room: string;
-  examiner: string;
-  type: string;
+  space: string;
+  lecturer: string;
+  date: string;
+  period: string;
 }
 
 const API_BASE_URL = "https://mobile.whz.de/prplan";
@@ -13,54 +12,35 @@ const SEM_GROUP = "252035";
 // Fallback exam data
 const FALLBACK_EXAMS: ExamEntry[] = [
   {
-    date: "15.02.2025",
-    time: "09:00 - 11:00",
-    course: "Advanced Programming",
-    room: "A11.2.23",
-    examiner: "Prof. Dr. Schmidt",
-    type: "Written Exam"
+    course: "WIW64000 Business Information Systems - 252035",
+    space: "165 (MHG)",
+    lecturer: "Prof.Schumann,C.",
+    date: "02.02.2026",
+    period: "10:00 a.m. to 11:30 a.m."
   },
   {
-    date: "18.02.2025",
-    time: "14:00 - 16:00",
-    course: "Database Systems",
-    room: "A11.3.15",
-    examiner: "Prof. Dr. Müller",
-    type: "Written Exam"
+    course: "PTI90220 Advanced Computer Graphics_GAB216 - 252035",
+    space: "",
+    lecturer: "Prof.Hellbach",
+    date: "04.02.2026",
+    period: "9:00 a.m. to 5:00 p.m."
   },
   {
-    date: "22.02.2025",
-    time: "10:00 - 12:00",
-    course: "Software Engineering",
-    room: "A11.2.18",
-    examiner: "Prof. Dr. Weber",
-    type: "Project Presentation"
-  },
-  {
-    date: "25.02.2025",
-    time: "09:00 - 11:00",
-    course: "Web Technologies",
-    room: "A11.3.22",
-    examiner: "Prof. Dr. Becker",
-    type: "Written Exam"
-  },
-  {
-    date: "01.03.2025",
-    time: "13:00 - 15:00",
-    course: "Computer Networks",
-    room: "A11.2.25",
-    examiner: "Prof. Dr. Fischer",
-    type: "Oral Exam"
+    course: "PTI90180 Car-to-Car Communication - 252035",
+    space: "370 (PKB Building 2)",
+    lecturer: "Prof.Grimm,F.",
+    date: "11.02.2026",
+    period: "9:00 a.m. to 5:00 p.m."
   }
 ];
 
 export const fetchExamPlan = async (): Promise<ExamEntry[]> => {
   try {
-    // Try to fetch exam plan data
-    const url = `${API_BASE_URL}/get_prplan.php?semGrp=${SEM_GROUP}&uid=student`;
+    // Fetch from the correct endpoint
+    const url = `${API_BASE_URL}/index.php?listSemGrp=${SEM_GROUP}`;
     
     const text = await fetchWithFallback(url);
-    const parsed = parseExamPlanHTML(text);
+    const parsed = parseExamPlanText(text);
     
     // Return parsed data if available, otherwise fallback
     return parsed.length > 0 ? parsed : FALLBACK_EXAMS;
@@ -89,53 +69,44 @@ const fetchWithFallback = async (url: string): Promise<string> => {
   }
 };
 
-const parseExamPlanHTML = (html: string): ExamEntry[] => {
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(html, "text/html");
+const parseExamPlanText = (text: string): ExamEntry[] => {
   const entries: ExamEntry[] = [];
   
-  // Look for exam entries in the HTML structure
-  const panels = doc.querySelectorAll(".panel, .list-group-item");
+  // Split by double newlines to separate exam entries
+  const blocks = text.split(/\n\s*\n/).filter(block => block.trim());
   
-  panels.forEach((panel) => {
-    const heading = panel.querySelector(".panel-heading, h3")?.textContent?.trim() || "";
+  blocks.forEach(block => {
+    const lines = block.split('\n').map(l => l.trim()).filter(Boolean);
     
-    // Extract date and time patterns
-    const dateMatch = heading.match(/(\d{1,2}\.\d{1,2}\.\d{4})/);
-    const timeMatch = heading.match(/(\d{1,2}:\d{2}\s*-\s*\d{1,2}:\d{2})/);
-    
-    const date = dateMatch ? dateMatch[1] : "";
-    const time = timeMatch ? timeMatch[1] : "";
+    if (lines.length < 5) return; // Need at least 5 lines for complete entry
     
     let course = "";
-    let room = "";
-    let examiner = "";
-    let type = "";
+    let space = "";
+    let lecturer = "";
+    let date = "";
+    let period = "";
     
-    const rows = panel.querySelectorAll("tr");
-    rows.forEach((row) => {
-      const cells = row.querySelectorAll("td");
-      
-      if (cells.length === 2) {
-        const key = cells[0].textContent?.trim() || "";
-        const value = cells[1].textContent?.trim() || "";
-        
-        if (key.includes("Fach") || key.includes("Modul")) {
-          course = value;
-        } else if (key.includes("Raum")) {
-          room = value.split("Karte")[0].trim();
-        } else if (key.includes("Prüfer") || key.includes("Dozent")) {
-          examiner = value;
-        } else if (key.includes("Art") || key.includes("Typ")) {
-          type = value;
-        }
+    // Parse each line by looking for keywords
+    lines.forEach(line => {
+      if (line.toLowerCase().startsWith('space')) {
+        space = line.replace(/^space\s*/i, '').trim();
+      } else if (line.toLowerCase().startsWith('lecturer')) {
+        lecturer = line.replace(/^lecturer\s*/i, '').trim();
+      } else if (line.toLowerCase().startsWith('date')) {
+        date = line.replace(/^date\s*/i, '').trim();
+      } else if (line.toLowerCase().startsWith('period')) {
+        period = line.replace(/^period\s*/i, '').trim();
+      } else if (!course && (line.includes('-') || line.match(/^[A-Z]{3}\d+/))) {
+        // First line that contains course code or has a dash is likely the course
+        course = line;
       }
     });
     
-    if (date || course) {
-      entries.push({ date, time, course, room, examiner, type });
+    // Only add if we have at least course and date
+    if (course && date) {
+      entries.push({ course, space, lecturer, date, period });
     }
   });
   
-  return entries.filter(e => e.course); // Only return entries with course names
+  return entries;
 };
