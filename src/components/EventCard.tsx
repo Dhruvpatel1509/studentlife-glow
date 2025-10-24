@@ -53,6 +53,37 @@ const EventCard = ({
     checkRegistration();
   }, [id]);
 
+  useEffect(() => {
+    if (!id) return;
+
+    const channel = supabase
+      .channel('event-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'events',
+          filter: `id=eq.${id}`
+        },
+        (payload) => {
+          console.log('Event updated:', payload);
+          const newEvent = payload.new as any;
+          if (newEvent.likes !== undefined) {
+            setLikes(newEvent.likes);
+          }
+          if (newEvent.prosts !== undefined) {
+            setProsts(newEvent.prosts);
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [id]);
+
   const [showImageUpload, setShowImageUpload] = useState(false);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [isDetecting, setIsDetecting] = useState(false);
