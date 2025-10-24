@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Heart, Wine, FileText, MapPin, Clock, Loader2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,35 +6,57 @@ import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { detectBeverage } from "@/lib/beverageDetection";
 import ProstAnimation from "./ProstAnimation";
+import { supabase } from "@/integrations/supabase/client";
 
 interface EventCardProps {
+  id?: string;
   title: string;
   location: string;
   time: string;
   image: string;
   category?: string;
+  initialLikes?: number;
+  initialProsts?: number;
 }
 
-const EventCard = ({ title, location, time, image, category }: EventCardProps) => {
-  const [likes, setLikes] = useState(Math.floor(Math.random() * 50) + 10);
-  const [prosts, setProsts] = useState(Math.floor(Math.random() * 30) + 5);
+const EventCard = ({ id, title, location, time, image, category, initialLikes = 0, initialProsts = 0 }: EventCardProps) => {
+  const [likes, setLikes] = useState(initialLikes);
+  const [prosts, setProsts] = useState(initialProsts);
   const [isLiked, setIsLiked] = useState(false);
+  
+  useEffect(() => {
+    setLikes(initialLikes);
+    setProsts(initialProsts);
+  }, [initialLikes, initialProsts]);
   const [showImageUpload, setShowImageUpload] = useState(false);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [isDetecting, setIsDetecting] = useState(false);
   const [showProstAnimation, setShowProstAnimation] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
-  const handleLike = () => {
-    if (isLiked) {
-      setLikes(likes - 1);
-      setIsLiked(false);
-      toast.info("Like removed");
-    } else {
-      setLikes(likes + 1);
-      setIsLiked(true);
-      toast.success("Liked! ❤️");
+  const handleLike = async () => {
+    const newLikes = isLiked ? likes - 1 : likes + 1;
+    const newIsLiked = !isLiked;
+    
+    setLikes(newLikes);
+    setIsLiked(newIsLiked);
+    
+    if (id) {
+      try {
+        const { error } = await supabase
+          .from('events')
+          .update({ likes: newLikes })
+          .eq('id', id);
+        
+        if (error) throw error;
+      } catch (error) {
+        console.error('Error updating likes:', error);
+        setLikes(isLiked ? likes + 1 : likes - 1);
+        setIsLiked(isLiked);
+      }
     }
+    
+    toast.success(newIsLiked ? "Liked! ❤️" : "Like removed");
   };
 
   const handleProst = () => {
@@ -61,7 +83,20 @@ const EventCard = ({ title, location, time, image, category }: EventCardProps) =
       const result = await detectBeverage(selectedImage);
       
       if (result.detected) {
-        setProsts(prosts + result.count);
+        const newProsts = prosts + result.count;
+        setProsts(newProsts);
+        
+        if (id) {
+          try {
+            await supabase
+              .from('events')
+              .update({ prosts: newProsts })
+              .eq('id', id);
+          } catch (error) {
+            console.error('Error updating prosts:', error);
+          }
+        }
+        
         setShowImageUpload(false);
         setShowProstAnimation(true);
         toast.success(`🍻 Prost! ${result.count} beverage(s) detected: ${result.labels.join(", ")}`);

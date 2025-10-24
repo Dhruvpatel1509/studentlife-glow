@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar, Trash2, Plus } from "lucide-react";
+import { Calendar, Trash2, Plus, Edit } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -22,6 +22,7 @@ const EventManager = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     title: "",
     location: "",
@@ -42,7 +43,7 @@ const EventManager = () => {
       const { data, error } = await supabase
         .from('events')
         .select('*')
-        .order('event_date', { ascending: true });
+        .order('event_date', { ascending: false });
 
       if (error) throw error;
       setEvents(data || []);
@@ -64,13 +65,23 @@ const EventManager = () => {
     }
 
     try {
-      const { error } = await supabase
-        .from('events')
-        .insert([formData]);
+      if (editingId) {
+        const { error } = await supabase
+          .from('events')
+          .update(formData)
+          .eq('id', editingId);
 
-      if (error) throw error;
+        if (error) throw error;
+        toast.success("Event updated successfully!");
+      } else {
+        const { error } = await supabase
+          .from('events')
+          .insert([formData]);
 
-      toast.success("Event created successfully!");
+        if (error) throw error;
+        toast.success("Event created successfully!");
+      }
+
       setFormData({
         title: "",
         location: "",
@@ -80,11 +91,25 @@ const EventManager = () => {
         category: "",
       });
       setShowForm(false);
+      setEditingId(null);
       fetchEvents();
     } catch (error: any) {
-      console.error('Error creating event:', error);
-      toast.error(error.message || "Failed to create event");
+      console.error('Error saving event:', error);
+      toast.error(error.message || "Failed to save event");
     }
+  };
+
+  const handleEdit = (event: Event) => {
+    setFormData({
+      title: event.title,
+      location: event.location,
+      event_date: event.event_date,
+      event_time: event.event_time,
+      image_url: event.image_url,
+      category: event.category,
+    });
+    setEditingId(event.id);
+    setShowForm(true);
   };
 
   const handleDelete = async (id: string) => {
@@ -112,7 +137,20 @@ const EventManager = () => {
           <h3 className="text-lg font-semibold gradient-text">Event Feed Manager</h3>
         </div>
         <Button 
-          onClick={() => setShowForm(!showForm)}
+          onClick={() => {
+            setShowForm(!showForm);
+            if (showForm) {
+              setEditingId(null);
+              setFormData({
+                title: "",
+                location: "",
+                event_date: "",
+                event_time: "",
+                image_url: "",
+                category: "",
+              });
+            }
+          }}
           size="sm"
           className="bg-primary hover:bg-primary/80"
         >
@@ -192,7 +230,7 @@ const EventManager = () => {
           </div>
 
           <Button type="submit" className="w-full bg-primary hover:bg-primary/80">
-            Create Event
+            {editingId ? "Update Event" : "Create Event"}
           </Button>
         </form>
       )}
@@ -214,14 +252,24 @@ const EventManager = () => {
                   {event.category}
                 </span>
               </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => handleDelete(event.id)}
-                className="text-destructive hover:text-destructive hover:bg-destructive/10"
-              >
-                <Trash2 className="w-4 h-4" />
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleEdit(event)}
+                  className="text-primary hover:text-primary hover:bg-primary/10"
+                >
+                  <Edit className="w-4 h-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleDelete(event.id)}
+                  className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              </div>
             </div>
           ))
         )}

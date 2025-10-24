@@ -23,7 +23,9 @@ export type Database = {
           event_time: string
           id: string
           image_url: string
+          likes: number
           location: string
+          prosts: number
           title: string
         }
         Insert: {
@@ -34,7 +36,9 @@ export type Database = {
           event_time: string
           id?: string
           image_url: string
+          likes?: number
           location: string
+          prosts?: number
           title: string
         }
         Update: {
@@ -45,7 +49,9 @@ export type Database = {
           event_time?: string
           id?: string
           image_url?: string
+          likes?: number
           location?: string
+          prosts?: number
           title?: string
         }
         Relationships: [

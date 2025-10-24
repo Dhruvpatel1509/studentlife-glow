@@ -16,6 +16,8 @@ interface Event {
   event_time: string;
   image_url: string;
   category: string;
+  likes: number;
+  prosts: number;
 }
 
 const Events = () => {
@@ -33,7 +35,7 @@ const Events = () => {
       const { data, error } = await supabase
         .from('events')
         .select('*')
-        .order('event_date', { ascending: true });
+        .order('event_date', { ascending: false });
 
       if (error) throw error;
       setEvents(data || []);
@@ -231,12 +233,15 @@ const Events = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {events.map((event) => (
                 <EventCard 
-                  key={event.id} 
+                  key={event.id}
+                  id={event.id}
                   title={event.title}
                   location={event.location}
                   time={event.event_time}
                   image={event.image_url}
                   category={event.category}
+                  initialLikes={event.likes}
+                  initialProsts={event.prosts}
                 />
               ))}
             </div>
