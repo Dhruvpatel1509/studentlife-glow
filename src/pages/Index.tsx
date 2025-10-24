@@ -11,6 +11,7 @@ import CalendarWidget from "@/components/CalendarWidget";
 import MySpaceForm from "@/components/MySpaceForm";
 import WordOfTheDay from "@/components/WordOfTheDay";
 import TimeTracker from "@/components/TimeTracker";
+import WalletCard from "@/components/WalletCard";
 
 const Index = () => {
   return (
@@ -19,7 +20,7 @@ const Index = () => {
       
       <main className="container mx-auto px-6 pt-24 pb-12">
         <h2 className="text-3xl font-bold text-center gradient-text mb-8">
-          ZNICKLY HOME
+          Zwickly HOME
         </h2>
         
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -40,6 +41,7 @@ const Index = () => {
           {/* RIGHT PANE */}
           <div className="lg:col-span-3 space-y-6">
             <GreetingSection />
+            <WalletCard />
             <CalendarWidget />
             <MySpaceForm />
             <WordOfTheDay />
