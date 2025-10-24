@@ -6,8 +6,8 @@ const KnowledgeCentreCard = () => {
     { name: "Moodle", url: "https://moodle.org", icon: "📚" },
     { name: "OPAL", url: "https://bildungsportal.sachsen.de/opal/shiblogin?7", icon: "🎓" },
     { name: "WHZ Library", url: "https://www.whz.de/english/university/central-institutions/library/", icon: "📖" },
-    { name: "Outlook Email", url: "https://outlook.office365.com/", icon: "📧" },
-    { name: "Slack", url: "https://app.slack.com/", icon: "💬" },
+    { name: "Outlook Email", url: "https://mail.fh-zwickau.de/owa/#path=/mail", icon: "📧" },
+    { name: "Slack", url: "https://slack.com/", icon: "💬" },
     { name: "Deutsche Bahn", url: "https://www.bahn.de", icon: "🚄" },
   ];
 
