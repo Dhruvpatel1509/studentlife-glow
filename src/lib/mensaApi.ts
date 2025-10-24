@@ -30,19 +30,85 @@ const getTodayDayName = (): string => {
   return DAYS_MAP[today] || "montag";
 };
 
-export const fetchMensaSchedule = async (dayId?: string): Promise<MensaMeal[]> => {
+const STORAGE_KEY = 'mensaMenuCache';
+
+const getCachedMenu = (): MensaMeal[] => {
   try {
-    const day = dayId || getTodayDayName();
-    const week = getCurrentWeek();
-    const timestamp = Date.now();
-    const url = `${API_BASE_URL}?tag=${day}_4&week=${week}&_=${timestamp}`;
-    
-    const text = await fetchWithFallback(url);
-    return parseMensaHTML(text);
-  } catch (error) {
-    console.error("Error fetching mensa schedule:", error);
-    return [];
+    const cached = localStorage.getItem(STORAGE_KEY);
+    if (cached) {
+      const data = JSON.parse(cached);
+      // Return cached data if it's from the last 7 days
+      if (Date.now() - data.timestamp < 7 * 24 * 60 * 60 * 1000) {
+        return data.meals;
+      }
+    }
+  } catch (e) {
+    console.error("Error reading cached menu:", e);
   }
+  return [];
+};
+
+const setCachedMenu = (meals: MensaMeal[]) => {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      meals,
+      timestamp: Date.now()
+    }));
+  } catch (e) {
+    console.error("Error caching menu:", e);
+  }
+};
+
+export const fetchMensaSchedule = async (dayId?: string): Promise<MensaMeal[]> => {
+  const tryFetchDay = async (day: string): Promise<MensaMeal[]> => {
+    try {
+      const week = getCurrentWeek();
+      const timestamp = Date.now();
+      const url = `${API_BASE_URL}?tag=${day}_4&week=${week}&_=${timestamp}`;
+      
+      const text = await fetchWithFallback(url);
+      const meals = parseMensaHTML(text);
+      
+      if (meals.length > 0) {
+        setCachedMenu(meals);
+        return meals;
+      }
+      return [];
+    } catch (error) {
+      console.error(`Error fetching mensa schedule for ${day}:`, error);
+      return [];
+    }
+  };
+
+  // Try current day first
+  const currentDay = dayId || getTodayDayName();
+  let meals = await tryFetchDay(currentDay);
+  
+  if (meals.length > 0) {
+    return meals;
+  }
+
+  // Try previous days in order
+  const daysOrder = ["freitag", "donnerstag", "mittwoch", "dienstag", "montag"];
+  const currentDayIndex = daysOrder.indexOf(currentDay);
+  
+  // Try days before current day
+  for (let i = currentDayIndex + 1; i < daysOrder.length; i++) {
+    console.log(`Trying previous day: ${daysOrder[i]}`);
+    meals = await tryFetchDay(daysOrder[i]);
+    if (meals.length > 0) {
+      return meals;
+    }
+  }
+
+  // If all API attempts fail, return cached data
+  const cachedMeals = getCachedMenu();
+  if (cachedMeals.length > 0) {
+    console.log("Returning cached menu data");
+    return cachedMeals;
+  }
+
+  return [];
 };
 
 const fetchWithFallback = async (url: string): Promise<string> => {
