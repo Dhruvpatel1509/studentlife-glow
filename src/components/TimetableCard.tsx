@@ -28,7 +28,7 @@ const TimetableCard = () => {
       {loading ? (
         <div className="text-center text-muted-foreground py-8">Loading schedule...</div>
       ) : schedule.length === 0 ? (
-        <div className="text-center text-muted-foreground py-8">No classes scheduled for today</div>
+        <div className="text-center text-muted-foreground py-8">Unable to load timetable. Please try again later.</div>
       ) : (
         <div className="space-y-3">
           {schedule.map((item, index) => (

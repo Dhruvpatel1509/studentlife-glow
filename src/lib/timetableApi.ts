@@ -31,13 +31,31 @@ export const fetchTimetable = async (dayId?: string): Promise<TimetableEntry[]> 
     const day = dayId || "Freitag";
     const url = `${API_BASE_URL}?dayId=${day}&semGrp=${SEM_GROUP}&uid=${UID}`;
     
-    const response = await fetch(url);
-    const text = await response.text();
-    
+    const text = await fetchWithFallback(url);
     return parseTimetableText(text);
   } catch (error) {
     console.error("Error fetching timetable:", error);
     return [];
+  }
+};
+
+const fetchWithFallback = async (url: string): Promise<string> => {
+  try {
+    const res = await fetch(url);
+    if (res.ok) return await res.text();
+    throw new Error(`Status ${res.status}`);
+  } catch (e) {
+    const proxies = [
+      (u: string) => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
+      (u: string) => `https://r.jina.ai/http/${u.replace(/^https?:\/\//, "")}`,
+    ];
+    for (const p of proxies) {
+      try {
+        const res = await fetch(p(url));
+        if (res.ok) return await res.text();
+      } catch {}
+    }
+    throw e;
   }
 };
 
