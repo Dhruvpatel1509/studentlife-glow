@@ -1,4 +1,4 @@
-import { Home, Users, Calendar, MessageSquare, BarChart3 } from "lucide-react";
+import { Home, Users, Calendar, MessageSquare } from "lucide-react";
 import { NavLink } from "react-router-dom";
 
 const AdminNavbar = () => {
@@ -7,7 +7,6 @@ const AdminNavbar = () => {
     { name: "Users", path: "/users", icon: Users },
     { name: "Events", path: "/admin/events", icon: Calendar },
     { name: "Chatbot", path: "/chatbot", icon: MessageSquare },
-    { name: "Analytics", path: "/admin/analytics", icon: BarChart3 },
   ];
 
   return (

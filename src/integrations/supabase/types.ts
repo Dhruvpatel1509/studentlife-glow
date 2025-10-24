@@ -14,6 +14,100 @@ export type Database = {
   }
   public: {
     Tables: {
+      email_analytics: {
+        Row: {
+          bounced: boolean
+          campaign_id: string | null
+          clicked_at: string | null
+          created_at: string
+          id: string
+          opened_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          bounced?: boolean
+          campaign_id?: string | null
+          clicked_at?: string | null
+          created_at?: string
+          id?: string
+          opened_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          bounced?: boolean
+          campaign_id?: string | null
+          clicked_at?: string | null
+          created_at?: string
+          id?: string
+          opened_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "email_analytics_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "email_campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      email_campaigns: {
+        Row: {
+          created_at: string
+          id: string
+          sent_count: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          sent_count?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          sent_count?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      event_attendance: {
+        Row: {
+          attended_at: string
+          event_id: string | null
+          id: string
+          tracking_link: string | null
+          user_id: string | null
+        }
+        Insert: {
+          attended_at?: string
+          event_id?: string | null
+          id?: string
+          tracking_link?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          attended_at?: string
+          event_id?: string | null
+          id?: string
+          tracking_link?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_attendance_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       event_registrations: {
         Row: {
           event_id: string

@@ -10,7 +10,6 @@ import Events from "./pages/Events";
 import Chatbot from "./pages/Chatbot";
 import KommPakt from "./pages/KommPakt";
 import AdminHome from "./pages/admin/AdminHome";
-import Analytics from "./pages/admin/Analytics";
 import AdminEvents from "./pages/admin/Events";
 import StudentAuth from "./pages/StudentAuth";
 import AdminAuth from "./pages/AdminAuth";
@@ -32,7 +31,6 @@ const App = () => (
           <Route path="/chatbot" element={<Chatbot />} />
           <Route path="/kommpakt" element={<KommPakt />} />
           <Route path="/admin/home" element={<AdminHome />} />
-          <Route path="/admin/analytics" element={<Analytics />} />
           <Route path="/admin/events" element={<AdminEvents />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
