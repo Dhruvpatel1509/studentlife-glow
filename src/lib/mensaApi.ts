@@ -70,9 +70,15 @@ const parseMensaHTML = (html: string): MensaMeal[] => {
   const doc = parser.parseFromString(html, "text/html");
   const meals: MensaMeal[] = [];
   
+  // Extract all image URLs first
+  const imageMatches = html.match(/pics\/essen_id\d+\.png/g) || [];
+  const imageUrls = imageMatches.map(img => `https://mobile.whz.de/mensa/${img}`);
+  
   // Find all meal sections - they are typically separated by headers
   const allText = doc.body.textContent || "";
   const sections = allText.split(/(?=[A-Z][a-z]+ Zwickau)/);
+  
+  let imageIndex = 0;
   
   sections.forEach((section) => {
     const lines = section.split('\n').map(l => l.trim()).filter(Boolean);
@@ -96,9 +102,9 @@ const parseMensaHTML = (html: string): MensaMeal[] => {
     const isVegetarian = section.toLowerCase().includes("veggie") || 
                         section.toLowerCase().includes("vegetar");
     
-    // Extract image URL from HTML
-    const imgMatch = html.match(/pics\/essen_id\d+\.png/);
-    const imageUrl = imgMatch ? `https://mobile.whz.de/mensa/${imgMatch[0]}` : "";
+    // Use the next available image URL
+    const imageUrl = imageUrls[imageIndex] || "";
+    imageIndex++;
     
     if (title && description) {
       meals.push({
