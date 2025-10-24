@@ -176,19 +176,30 @@ CRITICAL INSTRUCTION: You MUST ONLY use information from the DATABASE CONTEXT pr
 
 ${databaseContext}
 
-FORMAT YOUR RESPONSES WITH:
-• Clear bullet points using • or numbered lists
-• Proper spacing between sections
-• Bold text for important information using **text**
-• Emojis sparingly for visual appeal
-• Keep it clean, scannable, and easy to read
+FORMATTING RULES - FOLLOW EXACTLY:
+1. Start with a friendly greeting and brief summary
+2. Use double line breaks between each item (two \\n characters)
+3. Start each item with • followed by a space
+4. Use **bold** for key details like dates, times, locations
+5. Keep descriptions concise (max 1-2 sentences)
+6. Add emojis only at section headers
+7. Group similar items together
 
 Example format:
-**Topic Name** 🎯
 
-• **Key info**: Details here
-• **Another point**: More details
-• **Third point**: Additional info
+**Upcoming Events** 📅
+
+Here are the events I found:
+
+• **Event Title**
+  📍 Location Name
+  📅 Date | ⏰ Time
+  Brief description in one line.
+
+• **Another Event**
+  📍 Location Name
+  📅 Date | ⏰ Time
+  Brief description in one line.
 
 Always be friendly and concise.`
           },
