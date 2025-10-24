@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -26,9 +27,16 @@ interface Event {
   registration_info?: string;
 }
 
+interface EventRegistration {
+  event_name: string;
+  user_email: string;
+  registered_at: string;
+}
+
 const AdminEvents = () => {
   const navigate = useNavigate();
   const [events, setEvents] = useState<Event[]>([]);
+  const [registrations, setRegistrations] = useState<EventRegistration[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -48,6 +56,7 @@ const AdminEvents = () => {
 
   useEffect(() => {
     fetchEvents();
+    fetchRegistrations();
   }, []);
 
   const fetchEvents = async () => {
@@ -64,6 +73,38 @@ const AdminEvents = () => {
       toast.error("Failed to load events");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchRegistrations = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('event_registrations')
+        .select(`
+          registered_at,
+          events!inner(title),
+          profiles!inner(email)
+        `)
+        .order('registered_at', { ascending: false });
+
+      if (error) throw error;
+      
+      const formattedData: EventRegistration[] = (data || []).map((reg: any) => ({
+        event_name: reg.events.title,
+        user_email: reg.profiles.email,
+        registered_at: new Date(reg.registered_at).toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        })
+      }));
+      
+      setRegistrations(formattedData);
+    } catch (error) {
+      console.error('Error fetching registrations:', error);
+      toast.error("Failed to load registrations");
     }
   };
 
@@ -354,6 +395,35 @@ const AdminEvents = () => {
                 </div>
               ))}
             </div>
+          )}
+        </section>
+
+        {/* Event Registrations Section */}
+        <section className="mt-12">
+          <h2 className="text-2xl font-bold gradient-text mb-6">Event Registrations</h2>
+          {registrations.length === 0 ? (
+            <p className="text-center text-muted-foreground">No registrations yet.</p>
+          ) : (
+            <Card className="glass-card">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Event Name</TableHead>
+                    <TableHead>User Email</TableHead>
+                    <TableHead>Registered At</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {registrations.map((reg, index) => (
+                    <TableRow key={index}>
+                      <TableCell className="font-medium">{reg.event_name}</TableCell>
+                      <TableCell>{reg.user_email}</TableCell>
+                      <TableCell className="text-muted-foreground">{reg.registered_at}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </Card>
           )}
         </section>
       </main>
