@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { GraduationCap, ArrowLeft } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const StudentAuth = () => {
   const navigate = useNavigate();
@@ -13,13 +15,69 @@ const StudentAuth = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (session?.user) {
+          navigate("/");
+        }
+      }
+    );
+
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        navigate("/");
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [navigate]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement authentication with Supabase
-    console.log("Auth submission:", { email, password, isSignUp });
-    
-    // Redirect to student home page
-    navigate("/");
+
+    if (isSignUp && password !== confirmPassword) {
+      toast.error("Passwords don't match");
+      return;
+    }
+
+    try {
+      if (isSignUp) {
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/`,
+          },
+        });
+
+        if (error) throw error;
+
+        if (data.user) {
+          // Assign student role
+          const { error: roleError } = await supabase.rpc('assign_user_role', {
+            _user_id: data.user.id,
+            _role: 'student'
+          });
+
+          if (roleError) throw roleError;
+
+          toast.success("Account created! Please check your email to verify.");
+        }
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+
+        if (error) throw error;
+        
+        toast.success("Signed in successfully!");
+        navigate("/");
+      }
+    } catch (error: any) {
+      toast.error(error.message || "Authentication failed");
+    }
   };
 
   return (

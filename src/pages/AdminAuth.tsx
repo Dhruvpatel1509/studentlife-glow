@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Shield, ArrowLeft } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const AdminAuth = () => {
   const navigate = useNavigate();
@@ -14,13 +16,83 @@ const AdminAuth = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [adminCode, setAdminCode] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (session?.user) {
+          navigate("/admin/home");
+        }
+      }
+    );
+
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        navigate("/admin/home");
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [navigate]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement authentication with Supabase
-    console.log("Auth submission:", { email, password, isSignUp });
-    
-    // Redirect to admin home page
-    navigate("/admin/home");
+
+    if (isSignUp && password !== confirmPassword) {
+      toast.error("Passwords don't match");
+      return;
+    }
+
+    if (isSignUp && !adminCode) {
+      toast.error("Admin verification code is required");
+      return;
+    }
+
+    try {
+      if (isSignUp) {
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/admin/home`,
+          },
+        });
+
+        if (error) throw error;
+
+        if (data.user) {
+          // Assign admin role with verification code
+          const { error: roleError } = await supabase.rpc('assign_user_role', {
+            _user_id: data.user.id,
+            _role: 'admin',
+            _admin_code: adminCode
+          });
+
+          if (roleError) {
+            // If role assignment fails, show specific error
+            if (roleError.message.includes('Invalid admin verification code')) {
+              toast.error("Invalid admin verification code");
+            } else {
+              throw roleError;
+            }
+            return;
+          }
+
+          toast.success("Admin account created! Please check your email to verify.");
+        }
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+
+        if (error) throw error;
+        
+        toast.success("Signed in successfully!");
+        navigate("/admin/home");
+      }
+    } catch (error: any) {
+      toast.error(error.message || "Authentication failed");
+    }
   };
 
   return (
