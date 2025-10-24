@@ -22,6 +22,9 @@ const AdminHome = () => {
   });
   const [eventTrends, setEventTrends] = useState<any[]>([]);
   const [categoryData, setCategoryData] = useState<any[]>([]);
+  const [userGrowth, setUserGrowth] = useState<any[]>([]);
+  const [topEvents, setTopEvents] = useState<any[]>([]);
+  const [emailPerformance, setEmailPerformance] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -48,7 +51,7 @@ const AdminHome = () => {
       // Fetch email campaigns
       const { data: campaigns } = await supabase
         .from("email_campaigns")
-        .select("sent_count");
+        .select("id, sent_count");
 
       const totalSent = campaigns?.reduce((sum, c) => sum + c.sent_count, 0) || 0;
 
@@ -135,6 +138,64 @@ const AdminHome = () => {
 
       setEventTrends(monthlyData);
       setCategoryData(categoryChartData);
+
+      // Process user growth (last 6 months)
+      const { data: profiles } = await supabase
+        .from("profiles")
+        .select("created_at");
+
+      const userGrowthData = Array.from({ length: 6 }, (_, i) => {
+        const date = new Date();
+        date.setMonth(date.getMonth() - (5 - i));
+        return {
+          month: date.toLocaleDateString("en-US", { month: "short" }),
+          users: 0
+        };
+      });
+
+      profiles?.forEach(profile => {
+        const profileDate = new Date(profile.created_at);
+        const monthIndex = userGrowthData.findIndex(m => {
+          const d = new Date();
+          d.setMonth(d.getMonth() - (5 - userGrowthData.indexOf(m)));
+          return profileDate.getMonth() === d.getMonth() && profileDate.getFullYear() === d.getFullYear();
+        });
+        if (monthIndex >= 0) {
+          userGrowthData[monthIndex].users++;
+        }
+      });
+
+      setUserGrowth(userGrowthData);
+
+      // Process top events by engagement (likes + prosts)
+      const topEventsData = events
+        ?.map(event => ({
+          name: event.title.length > 20 ? event.title.substring(0, 20) + '...' : event.title,
+          engagement: (event.likes || 0) + (event.prosts || 0),
+          likes: event.likes || 0,
+          prosts: event.prosts || 0
+        }))
+        .sort((a, b) => b.engagement - a.engagement)
+        .slice(0, 5) || [];
+
+      setTopEvents(topEventsData);
+
+      // Process email campaign performance
+      const emailPerfData = campaigns?.slice(0, 5).map((campaign, index) => {
+        const campaignAnalytics = emailAnalytics?.filter(e => e.campaign_id === campaign.id) || [];
+        const opened = campaignAnalytics.filter(e => e.opened_at).length;
+        const clicked = campaignAnalytics.filter(e => e.clicked_at).length;
+        
+        return {
+          name: `Campaign ${index + 1}`,
+          sent: campaign.sent_count,
+          opened,
+          clicked
+        };
+      }) || [];
+
+      setEmailPerformance(emailPerfData);
+
       setLoading(false);
     } catch (error) {
       console.error("Error fetching analytics:", error);
@@ -372,6 +433,96 @@ const AdminHome = () => {
             </Card>
           )}
         </div>
+
+        {/* Additional Charts */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          {/* User Growth */}
+          <Card className="glass-card">
+            <CardHeader>
+              <CardTitle>User Growth</CardTitle>
+              <CardDescription>New user registrations (last 6 months)</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={userGrowth}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                  <XAxis dataKey="month" stroke="#9ca3af" />
+                  <YAxis stroke="#9ca3af" />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: '#1f2937', 
+                      border: '1px solid #374151',
+                      borderRadius: '8px'
+                    }}
+                  />
+                  <Legend />
+                  <Bar dataKey="users" fill="#8b5cf6" name="New Users" />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+
+          {/* Top Events by Engagement */}
+          {topEvents.length > 0 && (
+            <Card className="glass-card">
+              <CardHeader>
+                <CardTitle>Top Events</CardTitle>
+                <CardDescription>Most engaged events (likes + prosts)</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={topEvents} layout="vertical">
+                    <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                    <XAxis type="number" stroke="#9ca3af" />
+                    <YAxis dataKey="name" type="category" stroke="#9ca3af" width={150} />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: '#1f2937', 
+                        border: '1px solid #374151',
+                        borderRadius: '8px'
+                      }}
+                    />
+                    <Legend />
+                    <Bar dataKey="likes" stackId="a" fill="#10b981" name="Likes" />
+                    <Bar dataKey="prosts" stackId="a" fill="#06b6d4" name="Prosts" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+
+        {/* Email Campaign Performance */}
+        {emailPerformance.length > 0 && (
+          <div className="mb-8">
+            <Card className="glass-card">
+              <CardHeader>
+                <CardTitle>Email Campaign Performance</CardTitle>
+                <CardDescription>Recent campaigns: sent, opened, and clicked</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={emailPerformance}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                    <XAxis dataKey="name" stroke="#9ca3af" />
+                    <YAxis stroke="#9ca3af" />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: '#1f2937', 
+                        border: '1px solid #374151',
+                        borderRadius: '8px'
+                      }}
+                    />
+                    <Legend />
+                    <Bar dataKey="sent" fill="#3b82f6" name="Sent" />
+                    <Bar dataKey="opened" fill="#10b981" name="Opened" />
+                    <Bar dataKey="clicked" fill="#f97316" name="Clicked" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+          </div>
+        )}
       </main>
     </div>
   );
