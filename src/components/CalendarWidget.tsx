@@ -149,9 +149,14 @@ const CalendarWidget = () => {
               </div>
               
               {hoveredDate === day && hasEvent && (
-                <div className="absolute z-50 top-full left-1/2 transform -translate-x-1/2 mt-2 px-3 py-2 bg-card border border-primary/30 rounded-lg shadow-lg whitespace-nowrap text-sm font-medium">
+                <a
+                  href={`https://calendar.google.com/calendar/u/0/r/eventedit?dates=${currentDate.getFullYear()}${String(currentDate.getMonth() + 1).padStart(2, '0')}${String(day).padStart(2, '0')}/${currentDate.getFullYear()}${String(currentDate.getMonth() + 1).padStart(2, '0')}${String(day).padStart(2, '0')}&text=${encodeURIComponent(eventDetails[day])}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="absolute z-50 top-full left-1/2 transform -translate-x-1/2 mt-2 px-3 py-2 bg-card border border-primary/30 rounded-lg shadow-lg whitespace-nowrap text-sm font-medium hover:border-primary/50 hover:bg-primary/5 transition-all cursor-pointer"
+                >
                   {eventDetails[day]}
-                </div>
+                </a>
               )}
             </div>
           );

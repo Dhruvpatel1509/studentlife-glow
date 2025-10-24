@@ -4,8 +4,10 @@ import { Card } from "@/components/ui/card";
 const KnowledgeCentreCard = () => {
   const links = [
     { name: "Moodle", url: "https://moodle.org", icon: "📚" },
-    { name: "OPAL", url: "https://bildungsportal.sachsen.de", icon: "🎓" },
-    { name: "WHZ Library", url: "https://www.fh-zwickau.de", icon: "📖" },
+    { name: "OPAL", url: "https://bildungsportal.sachsen.de/opal/shiblogin?7", icon: "🎓" },
+    { name: "WHZ Library", url: "https://www.whz.de/english/university/central-institutions/library/", icon: "📖" },
+    { name: "Outlook Email", url: "https://outlook.office.com/mail/", icon: "📧" },
+    { name: "Slack", url: "https://slack.com/signin", icon: "💬" },
     { name: "Deutsche Bahn", url: "https://www.bahn.de", icon: "🚄" },
   ];
 
