@@ -41,9 +41,9 @@ const AdminHome = () => {
         .select("*", { count: "exact" });
 
       // Fetch total registrations
-      const { count: registrationsCount } = await supabase
+      const { data: registrations, count: registrationsCount } = await supabase
         .from("event_registrations")
-        .select("*", { count: "exact", head: true });
+        .select("*", { count: "exact" });
 
       // Fetch email campaigns
       const { data: campaigns } = await supabase
@@ -102,6 +102,19 @@ const AdminHome = () => {
         if (monthIndex >= 0) {
           monthlyData[monthIndex].events++;
           monthlyData[monthIndex].prosts += event.prosts || 0;
+        }
+      });
+
+      // Process registrations for monthly data
+      registrations?.forEach(registration => {
+        const regDate = new Date(registration.registered_at);
+        const monthIndex = monthlyData.findIndex(m => {
+          const d = new Date();
+          d.setMonth(d.getMonth() - (5 - monthlyData.indexOf(m)));
+          return regDate.getMonth() === d.getMonth() && regDate.getFullYear() === d.getFullYear();
+        });
+        if (monthIndex >= 0) {
+          monthlyData[monthIndex].registrations++;
         }
       });
 
