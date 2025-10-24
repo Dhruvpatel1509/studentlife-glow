@@ -25,7 +25,9 @@ const Events = () => {
       name: "Career King",
       icon: Briefcase,
       event: "WHZ Career Summit 2025",
-      engagement: 792,
+      prosts: 521,
+      registered: 800,
+      likes: 1321,
       gradient: "from-blue-400 to-cyan-400"
     },
     {
@@ -33,7 +35,9 @@ const Events = () => {
       name: "Rockstar Event",
       icon: Music,
       event: "Spring Music Festival",
-      engagement: 1321,
+      prosts: 634,
+      registered: 1250,
+      likes: 1842,
       gradient: "from-pink-400 to-orange-400"
     },
     {
@@ -41,7 +45,9 @@ const Events = () => {
       name: "Champion Meet",
       icon: Trophy,
       event: "Basketball Championship Finals",
-      engagement: 889,
+      prosts: 412,
+      registered: 650,
+      likes: 889,
       gradient: "from-cyan-400 to-blue-400"
     }
   ];
@@ -114,9 +120,6 @@ const Events = () => {
   ];
 
   const trendingEvents = allEvents.filter(event => event.trending);
-  const filteredEvents = selectedCategory === "all" 
-    ? allEvents 
-    : allEvents.filter(event => event.category === selectedCategory);
 
   return (
     <div className="min-h-screen">
@@ -170,7 +173,11 @@ const Events = () => {
                   </div>
                   <div className="bg-white/90 p-4 rounded-lg">
                     <h4 className="font-semibold text-foreground mb-2">{cat.event}</h4>
-                    <p className="text-sm text-muted-foreground">{cat.engagement} engagement</p>
+                    <div className="flex gap-4 text-sm">
+                      <span className="text-orange-500 font-semibold">{cat.prosts} Prosts</span>
+                      <span className="text-muted-foreground">{cat.registered} Registered</span>
+                      <span className="text-primary font-semibold">{cat.likes} Likes</span>
+                    </div>
                   </div>
                 </Card>
               );
@@ -178,37 +185,11 @@ const Events = () => {
           </div>
         </section>
 
-        {/* Category Filter */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold gradient-text mb-4">Browse by Category</h2>
-          <div className="flex flex-wrap gap-3">
-            {categories.map((cat) => {
-              const Icon = cat.icon;
-              return (
-                <button
-                  key={cat.id}
-                  onClick={() => setSelectedCategory(cat.id)}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-300 ${
-                    selectedCategory === cat.id
-                      ? "bg-primary text-primary-foreground"
-                      : "glass-card hover:bg-primary/20 text-foreground"
-                  }`}
-                >
-                  <Icon className="w-4 h-4" />
-                  {cat.name}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
         {/* All Events */}
         <section>
-          <h2 className="text-2xl font-bold gradient-text mb-6">
-            {selectedCategory === "all" ? "All Events" : categories.find(c => c.id === selectedCategory)?.name}
-          </h2>
+          <h2 className="text-2xl font-bold gradient-text mb-6">All Events</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredEvents.map((event, index) => (
+            {allEvents.map((event, index) => (
               <EventCard key={index} {...event} />
             ))}
           </div>
