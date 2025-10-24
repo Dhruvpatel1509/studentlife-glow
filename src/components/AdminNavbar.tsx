@@ -5,7 +5,7 @@ const AdminNavbar = () => {
   const navItems = [
     { name: "Home", path: "/admin/home", icon: Home },
     { name: "Users", path: "/users", icon: Users },
-    { name: "Events", path: "/events", icon: Calendar },
+    { name: "Events", path: "/admin/events", icon: Calendar },
     { name: "Chatbot", path: "/chatbot", icon: MessageSquare },
     { name: "Analytics", path: "/admin/analytics", icon: BarChart3 },
   ];
