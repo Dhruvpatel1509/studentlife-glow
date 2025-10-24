@@ -68,12 +68,12 @@ Contact: sustainability@whz.de`
               </div>
             </DialogTrigger>
             
-            <DialogContent className="glass-card border-primary/30 max-w-2xl">
+            <DialogContent className="bg-background/95 backdrop-blur-xl border-primary/30 max-w-2xl">
               <DialogHeader>
                 <DialogTitle className="gradient-text text-xl">{newsletter.title}</DialogTitle>
               </DialogHeader>
               <ScrollArea className="h-[400px] pr-4">
-                <div className="whitespace-pre-line text-muted-foreground">
+                <div className="whitespace-pre-line text-foreground">
                   {newsletter.content}
                 </div>
               </ScrollArea>

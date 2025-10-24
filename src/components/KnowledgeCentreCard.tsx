@@ -6,6 +6,7 @@ const KnowledgeCentreCard = () => {
     { name: "Moodle", url: "https://moodle.org", icon: "📚" },
     { name: "OPAL", url: "https://bildungsportal.sachsen.de", icon: "🎓" },
     { name: "WHZ Library", url: "https://www.fh-zwickau.de", icon: "📖" },
+    { name: "Deutsche Bahn", url: "https://www.bahn.de", icon: "🚄" },
   ];
 
   return (

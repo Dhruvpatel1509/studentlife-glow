@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight, UtensilsCrossed, Calendar, Newspaper } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,9 +11,10 @@ const CarouselSection = () => {
   const slides = [
     {
       title: "🥗 Mensa Menu",
-      subtitle: "This Week's Specials",
+      subtitle: "Delicious meals at student-friendly prices. Fresh ingredients daily with vegetarian and vegan options available.",
       icon: UtensilsCrossed,
       color: "from-green-500/20 to-emerald-500/20",
+      image: "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=800&h=400&fit=crop",
       content: (
         <div className="space-y-4">
           <h4 className="font-semibold text-lg text-primary">Weekly Menu</h4>
@@ -34,9 +35,10 @@ const CarouselSection = () => {
     },
     {
       title: "🎉 Upcoming Events",
-      subtitle: "Don't Miss Out!",
+      subtitle: "Join exciting campus events, workshops, and networking opportunities. Connect with fellow students and industry professionals.",
       icon: Calendar,
       color: "from-blue-500/20 to-cyan-500/20",
+      image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=400&fit=crop",
       content: (
         <div className="space-y-4">
           <h4 className="font-semibold text-lg text-primary">Next Week's Events</h4>
@@ -58,9 +60,10 @@ const CarouselSection = () => {
     },
     {
       title: "📰 Campus News",
-      subtitle: "Latest Updates",
+      subtitle: "Stay informed with the latest campus announcements, facility updates, and important notices for the student community.",
       icon: Newspaper,
       color: "from-purple-500/20 to-pink-500/20",
+      image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800&h=400&fit=crop",
       content: (
         <div className="space-y-4">
           <h4 className="font-semibold text-lg text-primary">Recent Announcements</h4>
@@ -84,47 +87,63 @@ const CarouselSection = () => {
   const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % slides.length);
   const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
 
+  // Auto-play carousel
+  useEffect(() => {
+    const interval = setInterval(() => {
+      nextSlide();
+    }, 5000); // Change slide every 5 seconds
+
+    return () => clearInterval(interval);
+  }, [currentSlide]);
+
   const CurrentIcon = slides[currentSlide].icon;
 
   return (
     <Card className="glass-card hover-glow p-8 animate-fade-in">
-      <div className={`relative rounded-xl bg-gradient-to-br ${slides[currentSlide].color} p-8 border border-primary/20`}>
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <div className="flex items-center gap-3 mb-2">
-              <CurrentIcon className="w-8 h-8 text-primary" />
-              <h3 className="text-2xl font-bold gradient-text">{slides[currentSlide].title}</h3>
+      <div className={`relative rounded-xl overflow-hidden bg-gradient-to-br ${slides[currentSlide].color} border border-primary/20`}>
+        {/* Background Image */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center opacity-20"
+          style={{ backgroundImage: `url(${slides[currentSlide].image})` }}
+        />
+        
+        <div className="relative z-10 p-8">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <div className="flex items-center gap-3 mb-2">
+                <CurrentIcon className="w-8 h-8 text-primary" />
+                <h3 className="text-2xl font-bold gradient-text">{slides[currentSlide].title}</h3>
+              </div>
+              <p className="text-foreground/90 text-sm max-w-2xl">{slides[currentSlide].subtitle}</p>
             </div>
-            <p className="text-muted-foreground">{slides[currentSlide].subtitle}</p>
-          </div>
           
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={prevSlide}
-              className="glass-card border-primary/20 hover:border-primary/40"
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={nextSlide}
-              className="glass-card border-primary/20 hover:border-primary/40"
-            >
-              <ChevronRight className="w-4 h-4" />
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={prevSlide}
+                className="glass-card border-primary/20 hover:border-primary/40"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </Button>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={nextSlide}
+                className="glass-card border-primary/20 hover:border-primary/40"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </Button>
+            </div>
           </div>
-        </div>
 
-        <Dialog>
+          <Dialog>
           <DialogTrigger asChild>
             <Button className="bg-primary hover:bg-primary/80 text-primary-foreground">
               View Details
             </Button>
           </DialogTrigger>
-          <DialogContent className="glass-card border-primary/30 max-w-2xl">
+          <DialogContent className="bg-background/95 backdrop-blur-xl border-primary/30 max-w-2xl">
             <DialogHeader>
               <DialogTitle className="gradient-text text-xl">{slides[currentSlide].title}</DialogTitle>
             </DialogHeader>
@@ -134,16 +153,17 @@ const CarouselSection = () => {
           </DialogContent>
         </Dialog>
 
-        <div className="flex justify-center gap-2 mt-6">
-          {slides.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setCurrentSlide(index)}
-              className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                index === currentSlide ? "bg-primary w-8" : "bg-primary/30"
-              }`}
-            />
-          ))}
+          <div className="flex justify-center gap-2 mt-6">
+            {slides.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentSlide(index)}
+                className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                  index === currentSlide ? "bg-primary w-8" : "bg-primary/30"
+                }`}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </Card>

@@ -108,9 +108,7 @@ const CalendarWidget = () => {
                 className={`aspect-square flex flex-col items-center justify-center text-base rounded-lg cursor-pointer transition-all duration-200 ${
                   isToday
                     ? "bg-primary text-primary-foreground font-bold shadow-lg scale-105"
-                    : hasEvent
-                    ? "bg-secondary/20 hover:bg-secondary/30 text-foreground font-medium"
-                    : "hover:bg-muted/20 text-muted-foreground hover:scale-105"
+                    : "hover:bg-muted/20 text-foreground hover:scale-105"
                 }`}
               >
                 <span className="mb-0.5">{day}</span>
