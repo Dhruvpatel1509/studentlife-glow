@@ -27,12 +27,28 @@ serve(async (req) => {
 
     // Get user's message
     const userMessage = messages[messages.length - 1]?.content?.toLowerCase() || '';
+    console.log('User message:', userMessage);
     
     // Fetch database data based on user query
     let databaseContext = '';
     
     try {
-      if (userMessage.includes('event')) {
+      // Check for timetable/schedule keywords (handle variations)
+      const isTimetableQuery = userMessage.includes('timetable') || 
+                               userMessage.includes('time table') || 
+                               userMessage.includes('schedule') || 
+                               userMessage.includes('class');
+      
+      const isEventQuery = userMessage.includes('event');
+      const isExamQuery = userMessage.includes('exam');
+      const isMensaQuery = userMessage.includes('mensa') || 
+                           userMessage.includes('food') || 
+                           userMessage.includes('menu');
+      const isNewsQuery = userMessage.includes('news');
+      
+      console.log('Query detection:', { isTimetableQuery, isEventQuery, isExamQuery, isMensaQuery, isNewsQuery });
+      
+      if (isEventQuery) {
         const { data: events } = await supabase
           .from('events')
           .select('title, event_date, event_time, location, category, description')
@@ -51,7 +67,8 @@ serve(async (req) => {
         }
       }
       
-      if (userMessage.includes('timetable') || userMessage.includes('schedule') || userMessage.includes('class')) {
+      if (isTimetableQuery) {
+        console.log('Fetching timetable data...');
         const days = ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag'];
         const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });
         const dayMap: { [key: string]: string } = {
@@ -63,12 +80,14 @@ serve(async (req) => {
         };
         const germanDay = dayMap[today] || 'Montag';
         
-        const { data: timetable } = await supabase
+        const { data: timetable, error: timetableError } = await supabase
           .from('timetable')
           .select('day_time, course, room, instructor')
           .eq('day_name', germanDay)
           .eq('sem_group', '252035')
           .order('day_time', { ascending: true });
+        
+        console.log('Timetable query result:', { count: timetable?.length, error: timetableError });
         
         if (timetable && timetable.length > 0) {
           databaseContext += `\n\nTIMETABLE FOR ${germanDay} FROM DATABASE:\n`;
@@ -80,7 +99,7 @@ serve(async (req) => {
         }
       }
       
-      if (userMessage.includes('exam')) {
+      if (isExamQuery) {
         const { data: exams } = await supabase
           .from('exams')
           .select('course, date, period, space, lecturer')
@@ -99,7 +118,7 @@ serve(async (req) => {
         }
       }
       
-      if (userMessage.includes('mensa') || userMessage.includes('food') || userMessage.includes('menu')) {
+      if (isMensaQuery) {
         const { data: menu } = await supabase
           .from('mensa_menu')
           .select('meal_station, dish_description, price_s, price_m, price_g, notes')
@@ -116,7 +135,7 @@ serve(async (req) => {
         }
       }
       
-      if (userMessage.includes('news')) {
+      if (isNewsQuery) {
         const { data: news } = await supabase
           .from('whz_news')
           .select('title, description')
@@ -136,6 +155,8 @@ serve(async (req) => {
       console.error('Database fetch error:', dbError);
       databaseContext = '\n\nError fetching data from database.\n';
     }
+    
+    console.log('Database context length:', databaseContext.length);
 
     // Call Groq API with database context
     let response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
