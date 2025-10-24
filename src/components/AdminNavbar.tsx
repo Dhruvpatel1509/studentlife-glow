@@ -14,7 +14,7 @@ const AdminNavbar = () => {
     <nav className="fixed top-0 left-0 right-0 z-50 glass-card border-b border-primary/20">
       <div className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold gradient-text">Zwickly Admin</h1>
+          <h1 className="text-2xl font-bold gradient-text overflow-visible">Zwickly Admin</h1>
           
           <ul className="flex items-center gap-8">
             {navItems.map((item) => {
