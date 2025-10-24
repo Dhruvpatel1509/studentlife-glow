@@ -170,6 +170,39 @@ export type Database = {
         }
         Relationships: []
       }
+      mensa_menu: {
+        Row: {
+          created_at: string
+          dish_description: string
+          id: string
+          meal_station: string
+          notes: string | null
+          price_g: string | null
+          price_m: string | null
+          price_s: string | null
+        }
+        Insert: {
+          created_at?: string
+          dish_description: string
+          id?: string
+          meal_station: string
+          notes?: string | null
+          price_g?: string | null
+          price_m?: string | null
+          price_s?: string | null
+        }
+        Update: {
+          created_at?: string
+          dish_description?: string
+          id?: string
+          meal_station?: string
+          notes?: string | null
+          price_g?: string | null
+          price_m?: string | null
+          price_s?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string | null
@@ -251,6 +284,27 @@ export type Database = {
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
+        }
+        Relationships: []
+      }
+      whz_news: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          id?: string
+          title: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          title?: string
         }
         Relationships: []
       }
