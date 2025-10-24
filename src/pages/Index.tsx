@@ -1,5 +1,6 @@
 import Navbar from "@/components/Navbar";
 import TimetableCard from "@/components/TimetableCard";
+import TransportScheduleCard from "@/components/TransportScheduleCard";
 import RegisteredEventsCard from "@/components/RegisteredEventsCard";
 import NewsletterCard from "@/components/NewsletterCard";
 import KnowledgeCentreCard from "@/components/KnowledgeCentreCard";
@@ -23,6 +24,7 @@ const Index = () => {
           {/* LEFT PANE */}
           <div className="lg:col-span-3 space-y-6">
           <TimetableCard />
+          <TransportScheduleCard />
           <ExamPlanCard />
           <RegisteredEventsCard />
           <NewsletterCard />
