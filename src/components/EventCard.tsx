@@ -17,12 +17,30 @@ interface EventCardProps {
   category?: string;
   initialLikes?: number;
   initialProsts?: number;
+  description?: string;
+  language?: string;
+  registrationInfo?: string;
+  eventDate?: string;
 }
 
-const EventCard = ({ id, title, location, time, image, category, initialLikes = 0, initialProsts = 0 }: EventCardProps) => {
+const EventCard = ({ 
+  id, 
+  title, 
+  location, 
+  time, 
+  image, 
+  category, 
+  initialLikes = 0, 
+  initialProsts = 0,
+  description,
+  language,
+  registrationInfo,
+  eventDate
+}: EventCardProps) => {
   const [likes, setLikes] = useState(initialLikes);
   const [prosts, setProsts] = useState(initialProsts);
   const [isLiked, setIsLiked] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
   
   useEffect(() => {
     setLikes(initialLikes);
@@ -122,7 +140,10 @@ const EventCard = ({ id, title, location, time, image, category, initialLikes = 
 
   return (
     <>
-      <Card className="glass-card hover-glow overflow-hidden group cursor-pointer transition-all duration-300 hover:scale-105 animate-fade-in">
+      <Card 
+        className="glass-card hover-glow overflow-hidden group cursor-pointer transition-all duration-300 hover:scale-105 animate-fade-in"
+        onClick={() => setShowDetails(true)}
+      >
         <div className="relative h-48 overflow-hidden">
           <img
             src={image}
@@ -155,35 +176,44 @@ const EventCard = ({ id, title, location, time, image, category, initialLikes = 
           
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleLike}
-                className={`flex-1 ${
-                  isLiked
-                    ? "bg-primary/20 border-primary/40 text-primary"
-                    : "glass-card border-primary/20"
-                }`}
-              >
-                <Heart className={`w-4 h-4 mr-1 ${isLiked ? "fill-primary" : ""}`} />
-                {likes}
-              </Button>
-              
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleProst}
-                className="flex-1 glass-card border-primary/20 hover:border-secondary/40"
-              >
-                <Wine className="w-4 h-4 mr-1" />
-                {prosts}
-              </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleLike();
+              }}
+              className={`flex-1 ${
+                isLiked
+                  ? "bg-primary/20 border-primary/40 text-primary"
+                  : "glass-card border-primary/20"
+              }`}
+            >
+              <Heart className={`w-4 h-4 mr-1 ${isLiked ? "fill-primary" : ""}`} />
+              {likes}
+            </Button>
+            
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleProst();
+              }}
+              className="flex-1 glass-card border-primary/20 hover:border-secondary/40"
+            >
+              <Wine className="w-4 h-4 mr-1" />
+              {prosts}
+            </Button>
             </div>
             
             <Button
               variant="default"
               size="sm"
-              onClick={handleRegister}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleRegister();
+              }}
               className="w-full bg-primary hover:bg-primary/80 text-primary-foreground"
             >
               <FileText className="w-4 h-4 mr-1" />
@@ -229,6 +259,101 @@ const EventCard = ({ id, title, location, time, image, category, initialLikes = 
                 "Submit & Detect"
               )}
             </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showDetails} onOpenChange={setShowDetails}>
+        <DialogContent className="glass-card border-primary/30 max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="gradient-text text-2xl">{title}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="relative h-64 rounded-lg overflow-hidden">
+              <img src={image} alt={title} className="w-full h-full object-cover" />
+            </div>
+            
+            {description && (
+              <div>
+                <h3 className="font-semibold text-lg mb-2 flex items-center gap-2">
+                  <FileText className="w-5 h-5 text-primary" />
+                  Description
+                </h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">{description}</p>
+              </div>
+            )}
+            
+            <div className="grid grid-cols-2 gap-4">
+              {eventDate && (
+                <div>
+                  <h3 className="font-semibold mb-1 flex items-center gap-2">
+                    <Clock className="w-4 h-4 text-primary" />
+                    Date
+                  </h3>
+                  <p className="text-muted-foreground text-sm">{eventDate}</p>
+                </div>
+              )}
+              
+              <div>
+                <h3 className="font-semibold mb-1 flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-primary" />
+                  Time
+                </h3>
+                <p className="text-muted-foreground text-sm">{time}</p>
+              </div>
+            </div>
+            
+            <div>
+              <h3 className="font-semibold mb-1 flex items-center gap-2">
+                <MapPin className="w-4 h-4 text-primary" />
+                Location
+              </h3>
+              <p className="text-muted-foreground text-sm">{location}</p>
+            </div>
+            
+            {language && (
+              <div>
+                <h3 className="font-semibold mb-1">Language</h3>
+                <p className="text-muted-foreground text-sm">{language}</p>
+              </div>
+            )}
+            
+            {registrationInfo && (
+              <div className="bg-primary/10 border border-primary/30 rounded-lg p-4">
+                <h3 className="font-semibold mb-2 text-primary">Registration Information</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{registrationInfo}</p>
+              </div>
+            )}
+            
+            <div className="flex gap-2 pt-4">
+              <Button
+                variant="outline"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleLike();
+                }}
+                className={`flex-1 ${
+                  isLiked
+                    ? "bg-primary/20 border-primary/40 text-primary"
+                    : ""
+                }`}
+              >
+                <Heart className={`w-4 h-4 mr-2 ${isLiked ? "fill-primary" : ""}`} />
+                {likes} Likes
+              </Button>
+              
+              <Button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowDetails(false);
+                  handleRegister();
+                }}
+                className="flex-1 bg-primary hover:bg-primary/80"
+              >
+                <FileText className="w-4 h-4 mr-2" />
+                Register Now
+              </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>

@@ -16,6 +16,9 @@ interface Event {
   event_time: string;
   image_url: string;
   category: string;
+  description?: string;
+  language?: string;
+  registration_info?: string;
 }
 
 const EventManager = () => {
@@ -30,6 +33,9 @@ const EventManager = () => {
     event_time: "",
     image_url: "",
     category: "",
+    description: "",
+    language: "",
+    registration_info: "",
   });
 
   const categories = ["Career", "Tech", "Music", "Sports", "Social"];
@@ -89,6 +95,9 @@ const EventManager = () => {
         event_time: "",
         image_url: "",
         category: "",
+        description: "",
+        language: "",
+        registration_info: "",
       });
       setShowForm(false);
       setEditingId(null);
@@ -107,6 +116,9 @@ const EventManager = () => {
       event_time: event.event_time,
       image_url: event.image_url,
       category: event.category,
+      description: event.description || "",
+      language: event.language || "",
+      registration_info: event.registration_info || "",
     });
     setEditingId(event.id);
     setShowForm(true);
@@ -148,6 +160,9 @@ const EventManager = () => {
                 event_time: "",
                 image_url: "",
                 category: "",
+                description: "",
+                language: "",
+                registration_info: "",
               });
             }
           }}
@@ -226,6 +241,38 @@ const EventManager = () => {
               value={formData.image_url}
               onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
               placeholder="https://images.unsplash.com/..."
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="description">Description (Optional)</Label>
+            <textarea
+              id="description"
+              value={formData.description}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              placeholder="Detailed event description..."
+              className="w-full min-h-24 px-3 py-2 rounded-md border border-input bg-background text-sm"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="language">Language (Optional)</Label>
+            <Input
+              id="language"
+              value={formData.language}
+              onChange={(e) => setFormData({ ...formData, language: e.target.value })}
+              placeholder="e.g., English, Deutsch, or both"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="registration_info">Registration Info (Optional)</Label>
+            <textarea
+              id="registration_info"
+              value={formData.registration_info}
+              onChange={(e) => setFormData({ ...formData, registration_info: e.target.value })}
+              placeholder="Registration requirements, deadlines, etc..."
+              className="w-full min-h-20 px-3 py-2 rounded-md border border-input bg-background text-sm"
             />
           </div>
 

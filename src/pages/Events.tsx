@@ -18,6 +18,9 @@ interface Event {
   category: string;
   likes: number;
   prosts: number;
+  description?: string;
+  language?: string;
+  registration_info?: string;
 }
 
 const Events = () => {
@@ -242,6 +245,14 @@ const Events = () => {
                   category={event.category}
                   initialLikes={event.likes}
                   initialProsts={event.prosts}
+                  description={event.description}
+                  language={event.language}
+                  registrationInfo={event.registration_info}
+                  eventDate={new Date(event.event_date).toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                  })}
                 />
               ))}
             </div>
