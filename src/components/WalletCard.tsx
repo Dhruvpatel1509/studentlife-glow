@@ -1,11 +1,37 @@
 import { Wallet, Plus } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 const WalletCard = () => {
-  const [balance, setBalance] = useState(47.50);
+  const [balance, setBalance] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchBalance();
+  }, []);
+
+  const fetchBalance = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('wallet_balance')
+        .eq('id', user.id)
+        .single();
+
+      if (error) throw error;
+      if (data) setBalance(data.wallet_balance || 0);
+    } catch (error) {
+      console.error('Error fetching balance:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleTopUp = () => {
     toast.success("Redirecting to top-up page...");
@@ -21,7 +47,9 @@ const WalletCard = () => {
       {/* Balance Display */}
       <div className="mb-6 p-4 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/20 border border-primary/30">
         <p className="text-sm text-muted-foreground mb-1">Current Balance</p>
-        <p className="text-4xl font-bold text-foreground mb-3">€{balance.toFixed(2)}</p>
+        <p className="text-4xl font-bold text-foreground mb-3">
+          {loading ? "..." : `€${balance.toFixed(2)}`}
+        </p>
         <Button 
           onClick={handleTopUp}
           className="w-full bg-primary hover:bg-primary/80 text-primary-foreground"

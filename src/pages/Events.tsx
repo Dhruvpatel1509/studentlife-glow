@@ -1,14 +1,49 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import EventCard from "@/components/EventCard";
 import { Beer, Briefcase, Music, Code, Users, Trophy, ArrowLeft } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+
+interface Event {
+  id: string;
+  title: string;
+  location: string;
+  event_date: string;
+  event_time: string;
+  image_url: string;
+  category: string;
+}
 
 const Events = () => {
   const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [events, setEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchEvents();
+  }, []);
+
+  const fetchEvents = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('events')
+        .select('*')
+        .order('event_date', { ascending: true });
+
+      if (error) throw error;
+      setEvents(data || []);
+    } catch (error) {
+      console.error('Error fetching events:', error);
+      toast.error("Failed to load events");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const categories = [
     { id: "all", name: "All Events", icon: Users },
@@ -188,11 +223,24 @@ const Events = () => {
         {/* All Events */}
         <section>
           <h2 className="text-2xl font-bold gradient-text mb-6">All Events</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {allEvents.map((event, index) => (
-              <EventCard key={index} {...event} />
-            ))}
-          </div>
+          {loading ? (
+            <p className="text-center text-muted-foreground">Loading events...</p>
+          ) : events.length === 0 ? (
+            <p className="text-center text-muted-foreground">No events available yet.</p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {events.map((event) => (
+                <EventCard 
+                  key={event.id} 
+                  title={event.title}
+                  location={event.location}
+                  time={event.event_time}
+                  image={event.image_url}
+                  category={event.category}
+                />
+              ))}
+            </div>
+          )}
         </section>
       </main>
     </div>

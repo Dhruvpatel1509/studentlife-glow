@@ -14,27 +14,71 @@ export type Database = {
   }
   public: {
     Tables: {
+      events: {
+        Row: {
+          category: string
+          created_at: string | null
+          created_by: string | null
+          event_date: string
+          event_time: string
+          id: string
+          image_url: string
+          location: string
+          title: string
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          created_by?: string | null
+          event_date: string
+          event_time: string
+          id?: string
+          image_url: string
+          location: string
+          title: string
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          created_by?: string | null
+          event_date?: string
+          event_time?: string
+          id?: string
+          image_url?: string
+          location?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "events_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string | null
           email: string
-          full_name: string | null
           id: string
           updated_at: string | null
+          wallet_balance: number
         }
         Insert: {
           created_at?: string | null
           email: string
-          full_name?: string | null
           id: string
           updated_at?: string | null
+          wallet_balance?: number
         }
         Update: {
           created_at?: string | null
           email?: string
-          full_name?: string | null
           id?: string
           updated_at?: string | null
+          wallet_balance?: number
         }
         Relationships: []
       }

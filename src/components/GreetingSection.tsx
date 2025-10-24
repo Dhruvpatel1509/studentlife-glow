@@ -21,7 +21,7 @@ const GreetingSection = () => {
   return (
     <Card className="glass-card hover-glow p-6 text-right animate-fade-in">
       <h3 className="text-2xl font-bold gradient-text mb-2">
-        {getGreeting()}, Antman! 👋
+        {getGreeting()}! 👋
       </h3>
       <p className="text-lg font-semibold text-primary mb-2">{getCurrentTime()}</p>
       <p className="text-sm text-muted-foreground mb-4">Ready to conquer your day?</p>

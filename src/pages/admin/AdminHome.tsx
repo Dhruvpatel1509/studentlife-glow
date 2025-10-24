@@ -11,6 +11,7 @@ import MySpaceForm from "@/components/MySpaceForm";
 import WordOfTheDay from "@/components/WordOfTheDay";
 import TimeTracker from "@/components/TimeTracker";
 import WalletCard from "@/components/WalletCard";
+import EventManager from "@/components/EventManager";
 
 const AdminHome = () => {
   return (
@@ -29,6 +30,7 @@ const AdminHome = () => {
 
           {/* MIDDLE PANE */}
           <div className="lg:col-span-6 space-y-6">
+            <EventManager />
             <CarouselSection />
             <TrendingEvents />
           </div>
