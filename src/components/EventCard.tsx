@@ -1,9 +1,11 @@
 import { useState } from "react";
-import { Heart, Wine, FileText, MapPin, Clock } from "lucide-react";
+import { Heart, Wine, FileText, MapPin, Clock, Loader2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { detectBeverage } from "@/lib/beverageDetection";
+import ProstAnimation from "./ProstAnimation";
 
 interface EventCardProps {
   title: string;
@@ -18,6 +20,10 @@ const EventCard = ({ title, location, time, image, category }: EventCardProps) =
   const [prosts, setProsts] = useState(Math.floor(Math.random() * 30) + 5);
   const [isLiked, setIsLiked] = useState(false);
   const [showImageUpload, setShowImageUpload] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [isDetecting, setIsDetecting] = useState(false);
+  const [showProstAnimation, setShowProstAnimation] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const handleLike = () => {
     if (isLiked) {
@@ -35,19 +41,43 @@ const EventCard = ({ title, location, time, image, category }: EventCardProps) =
     setShowImageUpload(true);
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Simulate beverage detection
-      const hasBeverage = Math.random() > 0.3; // 70% chance of detecting beverage
+      setSelectedImage(file);
+      const url = URL.createObjectURL(file);
+      setPreviewUrl(url);
+    }
+  };
+
+  const handleSubmitDetection = async () => {
+    if (!selectedImage) {
+      toast.error("Please select an image first!");
+      return;
+    }
+
+    setIsDetecting(true);
+    try {
+      const result = await detectBeverage(selectedImage);
       
-      if (hasBeverage) {
-        setProsts(prosts + 1);
-        toast.success("🍻 Prost! Beverage detected and counted!");
+      if (result.detected) {
+        setProsts(prosts + result.count);
         setShowImageUpload(false);
+        setShowProstAnimation(true);
+        toast.success(`🍻 Prost! ${result.count} beverage(s) detected: ${result.labels.join(", ")}`);
       } else {
         toast.error("No beverage detected. Try again with a drink in the image!");
       }
+    } catch (error) {
+      console.error('Detection error:', error);
+      toast.error("Error detecting beverage. Please try again.");
+    } finally {
+      setIsDetecting(false);
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+      setSelectedImage(null);
+      setPreviewUrl(null);
     }
   };
 
@@ -140,12 +170,38 @@ const EventCard = ({ title, location, time, image, category }: EventCardProps) =
             <input
               type="file"
               accept="image/*"
-              onChange={handleImageUpload}
+              onChange={handleImageSelect}
               className="w-full p-3 rounded-lg glass-card border border-primary/20 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/80"
             />
+            
+            {previewUrl && (
+              <div className="relative rounded-lg overflow-hidden border border-primary/20">
+                <img src={previewUrl} alt="Preview" className="w-full h-48 object-cover" />
+              </div>
+            )}
+
+            <Button
+              onClick={handleSubmitDetection}
+              disabled={!selectedImage || isDetecting}
+              className="w-full bg-primary hover:bg-primary/80 text-primary-foreground"
+            >
+              {isDetecting ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Detecting...
+                </>
+              ) : (
+                "Submit & Detect"
+              )}
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
+
+      <ProstAnimation 
+        show={showProstAnimation} 
+        onComplete={() => setShowProstAnimation(false)} 
+      />
     </>
   );
 };
