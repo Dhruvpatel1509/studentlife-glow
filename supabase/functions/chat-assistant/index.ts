@@ -176,7 +176,21 @@ CRITICAL INSTRUCTION: You MUST ONLY use information from the DATABASE CONTEXT pr
 
 ${databaseContext}
 
-Always be friendly, concise, and use emojis when presenting the information from the database.`
+FORMAT YOUR RESPONSES WITH:
+• Clear bullet points using • or numbered lists
+• Proper spacing between sections
+• Bold text for important information using **text**
+• Emojis sparingly for visual appeal
+• Keep it clean, scannable, and easy to read
+
+Example format:
+**Topic Name** 🎯
+
+• **Key info**: Details here
+• **Another point**: More details
+• **Third point**: Additional info
+
+Always be friendly and concise.`
           },
           ...messages
         ],
