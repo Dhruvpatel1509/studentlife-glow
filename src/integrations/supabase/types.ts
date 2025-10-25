@@ -221,6 +221,33 @@ export type Database = {
         }
         Relationships: []
       }
+      german_culture_interactions: {
+        Row: {
+          created_at: string
+          culture_background: string
+          german_behavior: string
+          id: string
+          interpretation: string
+          situation: string
+        }
+        Insert: {
+          created_at?: string
+          culture_background: string
+          german_behavior: string
+          id?: string
+          interpretation: string
+          situation: string
+        }
+        Update: {
+          created_at?: string
+          culture_background?: string
+          german_behavior?: string
+          id?: string
+          interpretation?: string
+          situation?: string
+        }
+        Relationships: []
+      }
       mensa_menu: {
         Row: {
           created_at: string

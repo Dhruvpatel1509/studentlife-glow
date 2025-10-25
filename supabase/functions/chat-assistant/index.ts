@@ -45,8 +45,15 @@ serve(async (req) => {
                            userMessage.includes('food') || 
                            userMessage.includes('menu');
       const isNewsQuery = userMessage.includes('news');
+      const isCultureQuery = userMessage.includes('culture') || 
+                             userMessage.includes('german') || 
+                             userMessage.includes('behavior') ||
+                             userMessage.includes('behaviour') ||
+                             userMessage.includes('custom') ||
+                             userMessage.includes('social') ||
+                             userMessage.includes('interaction');
       
-      console.log('Query detection:', { isTimetableQuery, isEventQuery, isExamQuery, isMensaQuery, isNewsQuery });
+      console.log('Query detection:', { isTimetableQuery, isEventQuery, isExamQuery, isMensaQuery, isNewsQuery, isCultureQuery });
       
       if (isEventQuery) {
         const { data: events } = await supabase
@@ -149,6 +156,22 @@ serve(async (req) => {
           });
         } else {
           databaseContext += '\n\nNo news found in database.\n';
+        }
+      }
+      
+      if (isCultureQuery) {
+        const { data: culture } = await supabase
+          .from('german_culture_interactions')
+          .select('situation, culture_background, german_behavior, interpretation')
+          .limit(20);
+        
+        if (culture && culture.length > 0) {
+          databaseContext += '\n\nGERMAN CULTURE & SOCIAL INTERACTIONS GUIDE FROM DATABASE:\n';
+          culture.forEach(c => {
+            databaseContext += `- ${c.situation}\n  Relevant for: ${c.culture_background}\n  Explanation: ${c.german_behavior}\n  Understanding: ${c.interpretation}\n`;
+          });
+        } else {
+          databaseContext += '\n\nNo culture information found in database.\n';
         }
       }
     } catch (dbError) {
