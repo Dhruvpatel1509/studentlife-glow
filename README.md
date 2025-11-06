@@ -1,73 +1,100 @@
-# Welcome to your Lovable project
+Zwickly 🚀
 
-## Project info
+Engagement Award Winner at LNDC 2025 (Zwickau)
 
-**URL**: https://lovable.dev/projects/ae0d2332-d160-417e-906f-12fd125d5f99
+Zwickly is a full-stack university engagement platform designed to enhance the student experience at German universities through real-time information, interactive features, and smart automation. It includes Student, Admin, and Chatbot portals, along with a mobile app built by a teammate. The platform gamifies student engagement and centralizes important campus information in one place.
 
-## How can I edit this code?
 
-There are several ways of editing your application.
+---
 
-**Use Lovable**
+🏆 Features
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/ae0d2332-d160-417e-906f-12fd125d5f99) and start prompting.
+Student Portal
 
-Changes made via Lovable will be committed automatically to this repo.
+Timetable Overview – Real-time class schedules scraped from the university website.
 
-**Use your preferred IDE**
+Mensa Menu – Live canteen data scraped from the university website.
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+Transport Updates – Next tram and other public transport info using VMS database.
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+Campus Events – Trending events categorized by music, career, and other types. Students can register for events.
 
-Follow these steps:
+Campus News – Latest news from university websites.
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+Exams Overview – Display upcoming exams.
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+German Word of the Day – Learn German vocabulary with meanings.
 
-# Step 3: Install the necessary dependencies.
-npm i
+MySpace Feature – Students can submit event requests to admins for approval.
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
 
-**Edit a file directly in GitHub**
+Admin Portal
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+Analytics Dashboard – View total users, likes, “Prosts,” active events, and more.
 
-**Use GitHub Codespaces**
+Event Management – Approve student-submitted events or create new events manually.
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+User Management – Monitor and manage registered users.
 
-## What technologies are used for this project?
 
-This project is built with:
+Chatbot Portal
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+Connected to Database – Provides answers about events, timetables, menus, and more.
 
-## How can I deploy this project?
+GROQ API Integration – Chatbot functions integrated via Supabase Edge Functions.
 
-Simply open [Lovable](https://lovable.dev/projects/ae0d2332-d160-417e-906f-12fd125d5f99) and click on Share -> Publish.
 
-## Can I connect a custom domain to my Lovable project?
+Engagement Feature – Prost Detector
 
-Yes, you can!
+RCNN + OpenCV Integration – Users can upload a photo with a beverage (bottle or mug).
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+Gamification – If the model detects a beverage, it increases the post count.
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+Community Focus – Encourages social engagement among students.
+
+
+
+---
+
+⚙️ Tech Stack
+
+Frontend
+
+Lovable – Low-code platform for frontend development
+
+React.js – Component-based UI framework
+
+Tailwind CSS – Responsive styling
+
+JavaScript / HTML / CSS – Core frontend technologies
+
+Axios / Fetch API – For real-time API communication
+
+
+Backend
+
+Supabase – Backend-as-a-service platform
+
+PostgreSQL – Database for all application data
+
+Supabase Auth – Authentication and role-based access (students/admins)
+
+Supabase Edge Functions – Server-side logic and chatbot integration
+
+
+SQL / Supabase Query Language – For database operations
+
+
+APIs & Integrations
+
+Web Scraping – Timetable, Mensa menu, events, and news
+
+VMS Database API – Real-time public transport info
+
+GROQ API – Chatbot integration
+
+RCNN + OpenCV – Prost Detector for beverage detection
+
+
+
+---
