@@ -1,100 +1,92 @@
-Zwickly 🚀
+# 🏆 Zwickly — University Engagement Platform
 
-Engagement Award Winner at LNDC 2025 (Zwickau)
-
-Zwickly is a full-stack university engagement platform designed to enhance the student experience at German universities through real-time information, interactive features, and smart automation. It includes Student, Admin, and Chatbot portals, along with a mobile app built by a teammate. The platform gamifies student engagement and centralizes important campus information in one place.
-
+> 🥇 **Winner in the Engagement Category (2025)**  
+> A full-stack university engagement platform built to unify student life at a German university — from timetable and Mensa menus to events, trams, and AI-powered features.
 
 ---
 
-🏆 Features
+## 🚀 Overview
 
-Student Portal
+**Zwickly** is a full-stack platform designed to bring together everything a student needs in one place — **student portal**, **admin dashboard**, and an **AI-enabled chatbot**.
 
-Timetable Overview – Real-time class schedules scraped from the university website.
-
-Mensa Menu – Live canteen data scraped from the university website.
-
-Transport Updates – Next tram and other public transport info using VMS database.
-
-Campus Events – Trending events categorized by music, career, and other types. Students can register for events.
-
-Campus News – Latest news from university websites.
-
-Exams Overview – Display upcoming exams.
-
-German Word of the Day – Learn German vocabulary with meanings.
-
-MySpace Feature – Students can submit event requests to admins for approval.
-
-
-Admin Portal
-
-Analytics Dashboard – View total users, likes, “Prosts,” active events, and more.
-
-Event Management – Approve student-submitted events or create new events manually.
-
-User Management – Monitor and manage registered users.
-
-
-Chatbot Portal
-
-Connected to Database – Provides answers about events, timetables, menus, and more.
-
-GROQ API Integration – Chatbot functions integrated via Supabase Edge Functions.
-
-
-Engagement Feature – Prost Detector
-
-RCNN + OpenCV Integration – Users can upload a photo with a beverage (bottle or mug).
-
-Gamification – If the model detects a beverage, it increases the post count.
-
-Community Focus – Encourages social engagement among students.
-
-
+Our goal was to make the **German university experience digital, interactive, and fun** — similar to how social platforms connect people, Zwickly connects students with their campus.
 
 ---
 
-⚙️ Tech Stack
+## 🧩 Core Features
 
-Frontend
-
-Lovable – Low-code platform for frontend development
-
-React.js – Component-based UI framework
-
-Tailwind CSS – Responsive styling
-
-JavaScript / HTML / CSS – Core frontend technologies
-
-Axios / Fetch API – For real-time API communication
-
-
-Backend
-
-Supabase – Backend-as-a-service platform
-
-PostgreSQL – Database for all application data
-
-Supabase Auth – Authentication and role-based access (students/admins)
-
-Supabase Edge Functions – Server-side logic and chatbot integration
-
-
-SQL / Supabase Query Language – For database operations
-
-
-APIs & Integrations
-
-Web Scraping – Timetable, Mensa menu, events, and news
-
-VMS Database API – Real-time public transport info
-
-GROQ API – Chatbot integration
-
-RCNN + OpenCV – Prost Detector for beverage detection
-
-
+### 🎓 Student Portal
+- 📅 **Real-Time Timetable** — Extracted via scraping APIs from the university website.  
+- 🍽️ **Mensa Menu Integration** — Live daily menus from the university dining API.  
+- 🚋 **Transport Updates (VMS API)** — Real-time tram schedules to the city center.  
+- 📢 **Campus Events** — View, register, and explore trending events by category (Career, Music, Sports, etc.).  
+- 📚 **German Word of the Day** — Learn new German words with meanings for cultural integration.  
+- 🧾 **Upcoming Exams & Campus News** — Pulled dynamically from university APIs.  
+- 🧍‍♂️ **MySpace (Student Requests)** — Students can send event proposals to the admin for approval.
 
 ---
+
+### ⚙️ Admin Portal
+- 📊 **Comprehensive Analytics Dashboard**  
+  - Total users, events, likes, prosts (posts), and engagement metrics.  
+  - Data connected to **PostgreSQL backend** via **Supabase**.  
+- 🗂️ **Event Management System**  
+  - Approve student-requested events.  
+  - Create or edit events directly.  
+  - Manage campus data and analytics with ease.
+
+---
+
+### 🤖 Chatbot Portal
+- 💬 **AI-Driven Chatbot** connected to the entire university dataset.  
+- ⚙️ Powered by **GROQ API** and **Supabase Edge Functions**.  
+- 🧠 Handles queries about timetables, Mensa, events, trams, and more — providing a smooth conversational experience for students.
+
+---
+
+### 🧠 AI Integration — RCNN Prost Detector
+- 🥤 Users can upload an image of themselves with a beverage (bottle/mug).  
+- 🔍 Our **RCNN model (via OpenCV)** detects the beverage.  
+- 👍 If detected, it automatically increments the “prost” (cheers) count.  
+- 🎯 Purpose: To encourage social engagement and sustainable habits through gamification.
+
+---
+
+## 🏗️ Tech Stack
+
+### 💻 Frontend
+- **Lovable (React-based)**  
+- **JavaScript / TypeScript**
+- **HTML / TailwindCSS**
+- **Supabase Edge Functions (for chatbot & event integrations)**  
+
+### 🗄️ Backend
+- **Supabase** (for Authentication, APIs, and PostgreSQL Database)
+- **PostgreSQL** (Database schema and analytics storage)
+- **OpenCV + RCNN** (Prost detection system)
+- **Python (OpenCV / RCNN Model Integration)**
+- **GROQ API** (for chatbot intelligence)
+- **VMS Transport API** (Real-time tram data)
+- **Custom scraping APIs** (for timetable, Mensa, and event data)
+
+---
+
+## 🧑‍💻 My Contributions (Jeneel Panchal)
+
+- 🧩 Designed and implemented **database schema** in **PostgreSQL**.  
+- 🔌 Integrated the **backend with Supabase** for authentication and data handling.  
+- 🧠 Implemented **R-CNN model integration** with **OpenCV** for prost detection.  
+- 💬 Developed **chatbot functions** and integrated **GROQ API** using **Supabase edge functions**.  
+- 🖥️ Contributed to **frontend development** (Lovable framework).  
+- 📊 Created the **complete analytics dashboard** and connected it with the backend.  
+
+---
+
+## 📱 Mobile App
+
+One of our teammates also developed a **Zwickly mobile app** that syncs with the web version, bringing the same engagement features to smartphones.
+
+---
+
+## 🧩 Architecture Overview
+
