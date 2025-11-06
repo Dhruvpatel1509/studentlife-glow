@@ -71,7 +71,7 @@ Our goal was to make the **German university experience digital, interactive, an
 
 ---
 
-## 🧑‍💻 My Contributions (Jeneel Panchal)
+## 🧑‍💻 My Contributions (Dhruvkumar Bhavinbhai Patel)
 
 - 🧩 Designed and implemented **database schema** in **PostgreSQL**.  
 - 🔌 Integrated the **backend with Supabase** for authentication and data handling.  
