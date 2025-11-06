@@ -94,5 +94,6 @@ Student and Admin portal :
 <img width="1340" height="459" alt="image (9)" src="https://github.com/user-attachments/assets/a7b1d694-2f60-4160-ad50-84bda86bb450" />
 <img width="1366" height="441" alt="image (11)" src="https://github.com/user-attachments/assets/44eb25ab-b9ee-4653-ac6a-2011ed93396b" />
 Chatbot :
+
 <img width="928" height="530" alt="image (10)" src="https://github.com/user-attachments/assets/b7f6a7a4-e16e-4962-9afd-229f24256ee9" />
 
