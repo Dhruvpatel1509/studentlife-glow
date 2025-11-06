@@ -55,10 +55,11 @@ Our goal was to make the **German university experience digital, interactive, an
 ## 🏗️ Tech Stack
 
 ### 💻 Frontend
-- **Lovable (React-based)**  
+- **React**  
 - **JavaScript / TypeScript**
 - **HTML / TailwindCSS**
-- **Supabase Edge Functions (for chatbot & event integrations)**  
+- **Supabase Edge Functions (for chatbot & event integrations)**
+- **Some of the frontend template was implemented via Loveable for faster implementation**
 
 ### 🗄️ Backend
 - **Supabase** (for Authentication, APIs, and PostgreSQL Database)
