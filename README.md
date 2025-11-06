@@ -1,5 +1,6 @@
 # 🏆 Zwickly — University Engagement Platform
 > (Scroll down for screenshots)
+# 
 > 🥇 **Winner in the Engagement Category (2025)**  
 > A full-stack university engagement platform built to unify student life at a German university — from timetable and Mensa menus to events, trams, and AI-powered features.
 
