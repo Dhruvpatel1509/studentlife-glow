@@ -85,13 +85,14 @@ Our goal was to make the **German university experience digital, interactive, an
 ---
 
 ## 📱 Screenshots
+Student and Admin portal :
 <img width="1413" height="901" alt="image (4)" src="https://github.com/user-attachments/assets/491592fc-273f-4f32-a055-b73f348a73ac" />
 <img width="1408" height="802" alt="image (5)" src="https://github.com/user-attachments/assets/942f7d5b-d818-4295-8d75-283af7ae9728" />
 <img width="1149" height="838" alt="image (7)" src="https://github.com/user-attachments/assets/1ef0e2c6-a102-4690-bdd6-83e58c1fb693" />
 <img width="1710" height="818" alt="image (1)" src="https://github.com/user-attachments/assets/e41b26c9-809e-47ea-8cf2-946521716df2" />
 <img width="1326" height="625" alt="image (8)" src="https://github.com/user-attachments/assets/aaa672f7-5360-4fd3-bfa5-4e27d49c3e3c" />
 <img width="1340" height="459" alt="image (9)" src="https://github.com/user-attachments/assets/a7b1d694-2f60-4160-ad50-84bda86bb450" />
-<img width="928" height="530" alt="image (10)" src="https://github.com/user-attachments/assets/b7f6a7a4-e16e-4962-9afd-229f24256ee9" />
 <img width="1366" height="441" alt="image (11)" src="https://github.com/user-attachments/assets/44eb25ab-b9ee-4653-ac6a-2011ed93396b" />
-
+Chatbot :
+<img width="928" height="530" alt="image (10)" src="https://github.com/user-attachments/assets/b7f6a7a4-e16e-4962-9afd-229f24256ee9" />
 
